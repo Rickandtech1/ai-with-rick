@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    html { scroll-behavior: smooth; }
+    body { margin: 0; -webkit-font-smoothing: antialiased; }
+    * { box-sizing: border-box; }
+    input::placeholder { color: #A0A0A6; }
+  </style>
+</helmet>
+
+<div style="background:linear-gradient(135deg, #FBE0C8 0%, #FDF3E7 50%, #F8D9C4 100%); min-height:100vh; font-family:'Familjen Grotesk',sans-serif; color:#1D1D1F;">
+
+  <!-- HEADER -->
+  <header data-screen-label="Header" style="position:sticky; top:0; z-index:10; display:flex; align-items:center; justify-content:space-between; padding:18px 48px; max-width:1240px; margin:0 auto; background:rgba(255,255,255,0.26); backdrop-filter:blur(28px); border-radius:0 0 20px 20px; border:1px solid rgba(255,255,255,0.4); box-shadow:0 8px 24px rgba(31,41,89,0.06);">
+    <div onClick="{{ backToLibrary }}" style="font-size:17px; font-weight:700; letter-spacing:-0.01em; cursor:pointer;">AI with Rick</div>
+    <sc-if value="{{ isLibraryView }}" hint-placeholder-val="{{ true }}">
+      <nav style="display:flex; align-items:center; gap:28px;">
+        <a href="#resources" style="font-size:14px; color:#CC785C; text-decoration:none; font-weight:600;" style-hover="{{ navHoverStyle }}">Resources</a>
+        <a href="#contact" style="font-size:14px; color:#1D1D1F; text-decoration:none; font-weight:600;" style-hover="{{ navHoverStyle }}">Contact</a>
+      </nav>
+    </sc-if>
+    <sc-if value="{{ isDetailView }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ backToLibrary }}" style="background:none; border:none; padding:0; cursor:pointer; font-size:14px; color:#CC785C; font-weight:600;" style-hover="{{ navHoverStyle }}">&larr; Back to library</button>
+    </sc-if>
+  </header>
+
+  <!-- LIBRARY VIEW -->
+  <sc-if value="{{ isLibraryView }}" hint-placeholder-val="{{ true }}">
+    <div>
+
+      <!-- HERO -->
+      <section data-screen-label="Hero" style="max-width:1240px; margin:0 auto; padding:88px 48px 130px; display:grid; grid-template-columns:1.15fr 0.85fr; gap:56px; align-items:center;">
+        <div>
+          <div style="display:inline-block; font-size:12.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#CC785C; background:rgba(204,120,92,0.1); padding:8px 16px; border-radius:100px; margin-bottom:28px;">A growing library of notes</div>
+          <h1 style="font-size:58px; line-height:1.08; font-weight:700; margin:0 0 26px; letter-spacing:-0.02em; max-width:600px;">Practical AI knowledge, minus the hype.</h1>
+          <p style="font-size:18px; line-height:1.6; color:#6E6E73; max-width:500px; margin:0 0 36px;">I'm Rick — I write and record what I'm actually learning about AI and modern tooling, then package the useful parts into guides you can keep.</p>
+          <a href="#resources" style="display:inline-flex; align-items:center; gap:10px; background:#1D1D1F; color:#FFFFFF; font-size:15px; font-weight:600; padding:16px 28px; border-radius:14px; text-decoration:none; box-shadow:0 10px 24px rgba(29,29,31,0.22);" style-hover="{{ ctaHoverStyle }}">Browse the library <span>↓</span></a>
+        </div>
+        <div style="perspective:1200px; display:flex; justify-content:center;">
+          <a href="https://www.youtube.com/@aiwithrick" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:inherit; display:flex; flex-direction:column; justify-content:space-between; width:280px; height:340px; background:rgba(255,255,255,0.2); backdrop-filter:blur(34px); border-radius:28px; border:1px solid rgba(255,255,255,0.48); box-shadow:0 40px 80px rgba(31,41,89,0.18), 0 4px 16px rgba(31,41,89,0.08); transform:rotate3d(0.4, -0.6, 0.08, 18deg); padding:28px; cursor:pointer;" style-hover="{{ videoCardHoverStyle }}">
+            <div>
+              <div style="font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#CC785C; margin-bottom:14px;">Video Walkthrough · YouTube</div>
+              <div style="font-size:20px; font-weight:700; line-height:1.25; margin-bottom:10px;" style-hover="{{ videoTitleHoverStyle }}">Building Your First RAG Pipeline</div>
+              <div style="font-size:13px; color:#8A8A90; line-height:1.5;">A practical walkthrough, no hand-waving.</div>
+            </div>
+            <div style="width:44px; height:44px; border-radius:50%; background:#CC785C; display:flex; align-items:center; justify-content:center; box-shadow:0 12px 20px rgba(204,120,92,0.35);">
+              <span style="width:0; height:0; border-top:7px solid transparent; border-bottom:7px solid transparent; border-left:11px solid #FFFFFF; margin-left:2px;"></span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- RESOURCES -->
+      <section data-screen-label="Resources" id="resources" style="max-width:1240px; margin:0 auto; padding:0 48px 110px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:44px; gap:32px; flex-wrap:wrap;">
+          <div>
+            <div style="font-size:12.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#CC785C; margin-bottom:12px;">The library</div>
+            <h2 style="font-size:36px; font-weight:700; margin:0; letter-spacing:-0.01em;">Resources</h2>
+          </div>
+          <p style="font-size:15px; color:#8A8A90; max-width:340px; margin:0;">Everything I've put together so far. Pick one to read and download.</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:20px;">
+          <sc-for list="{{ cards }}" as="card" hint-placeholder-count="9">
+
+            <sc-if value="{{ card.locked }}" hint-placeholder-val="{{ false }}">
+              <div style="position:relative; grid-column:{{ card.spanStyle }}; background:rgba(255,255,255,0.12); backdrop-filter:blur(22px); border-radius:22px; border:1px solid rgba(255,255,255,0.28); padding:28px; box-shadow:0 12px 28px rgba(31,41,89,0.06);">
+                <div style="position:absolute; top:22px; right:22px; background:rgba(29,29,31,0.85); color:#FFFFFF; font-size:11px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; padding:5px 11px; border-radius:100px;">Premium</div>
+                <button onClick="{{ card.onToggle }}" style="position:absolute; top:22px; left:22px; display:flex; align-items:center; background:none; border:none; cursor:pointer; padding:0;" title="Toggle visibility (design preview only)">
+                  <span style="width:26px; height:15px; border-radius:8px; background:#D8D8DE; position:relative; display:inline-block;">
+                    <span style="position:absolute; top:2px; left:2px; width:11px; height:11px; border-radius:50%; background:#FFFFFF;"></span>
+                  </span>
+                </button>
+                <div style="margin-top:38px; width:32px; height:32px; border-radius:10px; background:rgba(142,142,147,0.18); display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+                  <span style="width:11px; height:8px; background:#8A8A90; border-radius:2px; position:relative; display:block;">
+                    <span style="position:absolute; top:-6px; left:1.5px; width:8px; height:8px; border:1.6px solid #8A8A90; border-bottom:none; border-radius:5px 5px 0 0;"></span>
+                  </span>
+                </div>
+                <div style="font-size:11.5px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase; color:#A0A0A6; margin-bottom:10px;">{{ card.format }} · {{ card.date }}</div>
+                <h3 style="font-size:19px; font-weight:700; color:#8A8A90; margin:0 0 8px;">{{ card.title }}</h3>
+                <p style="font-size:14px; line-height:1.6; color:#A0A0A6; margin:0;">{{ card.desc }}</p>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ card.showFeatured }}" hint-placeholder-val="{{ false }}">
+              <div onClick="{{ card.onOpen }}" style="position:relative; grid-column:{{ card.spanStyle }}; cursor:pointer; background:rgba(255,255,255,0.28); backdrop-filter:blur(30px); border-radius:24px; border:1px solid rgba(255,255,255,0.48); padding:36px; box-shadow:0 24px 48px rgba(31,41,89,0.14), 0 2px 8px rgba(31,41,89,0.06);" style-hover="{{ featuredHoverStyle }}">
+                <button onClick="{{ card.onToggle }}" style="position:absolute; top:30px; right:30px; display:flex; align-items:center; background:none; border:none; cursor:pointer; padding:0;" title="Toggle visibility (design preview only)">
+                  <span style="width:28px; height:16px; border-radius:8px; background:#CC785C; position:relative; display:inline-block;">
+                    <span style="position:absolute; top:2px; left:14px; width:12px; height:12px; border-radius:50%; background:#FFFFFF;"></span>
+                  </span>
+                </button>
+                <div style="font-size:11.5px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:#CC785C; margin-bottom:16px;">{{ card.format }} · {{ card.date }}</div>
+                <h3 style="font-size:26px; font-weight:700; margin:0 0 12px; letter-spacing:-0.01em; max-width:420px;">{{ card.title }}</h3>
+                <p style="font-size:15.5px; line-height:1.6; color:#6E6E73; margin:0 0 26px; max-width:420px;">{{ card.desc }}</p>
+                <div style="display:inline-flex; align-items:center; gap:8px; color:#CC785C; font-weight:700; font-size:14.5px;">Read & download <span>→</span></div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ card.showNormal }}" hint-placeholder-val="{{ true }}">
+              <div onClick="{{ card.onOpen }}" style="position:relative; cursor:pointer; background:rgba(255,255,255,0.22); backdrop-filter:blur(26px); border-radius:20px; border:1px solid rgba(255,255,255,0.4); padding:26px; box-shadow:0 14px 30px rgba(31,41,89,0.08);" style-hover="{{ normalHoverStyle }}">
+                <button onClick="{{ card.onToggle }}" style="position:absolute; top:22px; right:22px; display:flex; align-items:center; background:none; border:none; cursor:pointer; padding:0;" title="Toggle visibility (design preview only)">
+                  <span style="width:26px; height:15px; border-radius:8px; background:#CC785C; position:relative; display:inline-block;">
+                    <span style="position:absolute; top:2px; left:13px; width:11px; height:11px; border-radius:50%; background:#FFFFFF;"></span>
+                  </span>
+                </button>
+                <div style="font-size:11.5px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:#CC785C; margin-bottom:14px; padding-right:60px;">{{ card.format }} · {{ card.date }}</div>
+                <h3 style="font-size:19px; font-weight:700; margin:0 0 8px; letter-spacing:-0.005em;">{{ card.title }}</h3>
+                <p style="font-size:14px; line-height:1.6; color:#6E6E73; margin:0 0 20px;">{{ card.desc }}</p>
+                <div style="display:inline-flex; align-items:center; gap:8px; color:#CC785C; font-weight:600; font-size:13.5px;">Read & download <span>→</span></div>
+              </div>
+            </sc-if>
+
+          </sc-for>
+        </div>
+      </section>
+
+      <!-- NEWSLETTER & SOCIAL -->
+      <section data-screen-label="Newsletter and Social" style="max-width:1240px; margin:0 auto; padding:0 48px 110px;">
+        <div style="background:rgba(255,255,255,0.2); backdrop-filter:blur(26px); border-radius:28px; border:1px solid rgba(255,255,255,0.38); box-shadow:0 20px 40px rgba(31,41,89,0.08); padding:52px; display:grid; grid-template-columns:1.1fr 1fr; gap:60px;">
+
+          <div>
+            <div style="font-size:12.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#CC785C; margin-bottom:16px;">Stay in the loop</div>
+            <h2 style="font-size:26px; font-weight:700; margin:0 0 12px; letter-spacing:-0.01em;">Get new resources by email</h2>
+            <p style="font-size:15px; line-height:1.6; color:#6E6E73; margin:0 0 26px; max-width:400px;">One note when something new lands in the library. No spam, unsubscribe anytime.</p>
+
+            <sc-if value="{{ newsletterSubmitted }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:15px; font-weight:600; color:#CC785C;">You're on the list — thanks.</div>
+            </sc-if>
+            <sc-if value="{{ showNewsletterForm }}" hint-placeholder-val="{{ true }}">
+              <form onSubmit="{{ handleNewsletterSubmit }}" style="display:flex; gap:10px; max-width:420px; flex-wrap:wrap;">
+                <input required="{{ true }}" type="email" value="{{ newsletterEmail }}" onChange="{{ onNewsletterEmailChange }}" placeholder="you@example.com" style="flex:1; min-width:200px; font-family:'Familjen Grotesk',sans-serif; font-size:15px; padding:13px 16px; border:1px solid rgba(0,0,0,0.08); border-radius:12px; background:rgba(255,255,255,0.8); color:#1D1D1F;" />
+                <button type="submit" style="background:#1D1D1F; color:#FFFFFF; font-size:14px; font-weight:600; padding:13px 22px; border:none; border-radius:12px; cursor:pointer; white-space:nowrap;" style-hover="{{ ctaHoverStyle }}">Subscribe</button>
+              </form>
+            </sc-if>
+          </div>
+
+          <div>
+            <div style="font-size:12.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#CC785C; margin-bottom:16px;">Follow along</div>
+            <h2 style="font-size:26px; font-weight:700; margin:0 0 20px; letter-spacing:-0.01em;">Find more on social</h2>
+            <div>
+              <sc-for list="{{ socialLinks }}" as="social" hint-placeholder-count="4">
+                <a href="{{ social.href }}" style="display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid rgba(0,0,0,0.08); text-decoration:none; color:#1D1D1F;">
+                  <span style="font-size:16px; font-weight:600;">{{ social.name }}</span>
+                  <span style="font-size:13px; color:#8A8A90;">{{ social.handle }} →</span>
+                </a>
+              </sc-for>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </sc-if>
+
+  <!-- DETAIL / READ VIEW -->
+  <sc-if value="{{ isDetailView }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Resource Detail" style="max-width:760px; margin:0 auto; padding:60px 48px 140px;">
+      <div style="background:rgba(255,255,255,0.24); backdrop-filter:blur(30px); border-radius:28px; border:1px solid rgba(255,255,255,0.44); box-shadow:0 24px 48px rgba(31,41,89,0.1); padding:52px;">
+
+        <div style="font-size:12px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:#CC785C; margin-bottom:20px;">{{ selectedResource.format }} · {{ selectedResource.date }}</div>
+        <h1 style="font-size:40px; font-weight:700; margin:0 0 16px; letter-spacing:-0.01em; line-height:1.12;">{{ selectedResource.title }}</h1>
+        <p style="font-size:17.5px; line-height:1.6; color:#6E6E73; margin:0 0 36px;">{{ selectedResource.desc }}</p>
+
+        <div style="border-top:1px solid rgba(0,0,0,0.08); padding-top:32px; margin-bottom:36px;">
+          <p style="font-size:15.5px; line-height:1.75; color:#3A3A3E; margin:0 0 18px;">This is where the full write-up goes — the actual walkthrough, notes, or explanation readers came for. Swap this placeholder for the real content whenever it's ready.</p>
+          <p style="font-size:15.5px; line-height:1.75; color:#3A3A3E; margin:0;">The download below packages the same material as a {{ selectedResource.format }} you can keep, in case you'd rather reference it later than rely on this page.</p>
+        </div>
+
+        <div style="border-top:1px solid rgba(0,0,0,0.08); padding-top:36px;">
+
+          <sc-if value="{{ showDownloadCta }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ startDownloadFlow }}" style="display:inline-flex; align-items:center; gap:10px; background:#1D1D1F; color:#FFFFFF; font-size:15px; font-weight:600; padding:16px 28px; border:none; border-radius:14px; cursor:pointer; box-shadow:0 10px 24px rgba(29,29,31,0.2);" style-hover="{{ ctaHoverStyle }}">Download {{ selectedResource.format }} <span>↓</span></button>
+          </sc-if>
+
+          <sc-if value="{{ showForm }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <h2 style="font-size:20px; font-weight:700; margin:0 0 18px;">A few details, then it's yours</h2>
+              <form onSubmit="{{ handleSubmit }}" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; max-width:480px;">
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                  <label style="font-size:13px; font-weight:600; color:#1D1D1F;">First name</label>
+                  <input required="{{ true }}" value="{{ formValues.firstName }}" onChange="{{ onFirstNameChange }}" placeholder="Ada" style="font-family:'Familjen Grotesk',sans-serif; font-size:15px; padding:12px 14px; border:1px solid rgba(0,0,0,0.08); border-radius:12px; background:rgba(255,255,255,0.9); color:#1D1D1F;" />
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                  <label style="font-size:13px; font-weight:600; color:#1D1D1F;">Last name</label>
+                  <input required="{{ true }}" value="{{ formValues.lastName }}" onChange="{{ onLastNameChange }}" placeholder="Lovelace" style="font-family:'Familjen Grotesk',sans-serif; font-size:15px; padding:12px 14px; border:1px solid rgba(0,0,0,0.08); border-radius:12px; background:rgba(255,255,255,0.9); color:#1D1D1F;" />
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px; grid-column:span 2;">
+                  <label style="font-size:13px; font-weight:600; color:#1D1D1F;">Email</label>
+                  <input required="{{ true }}" type="email" value="{{ formValues.email }}" onChange="{{ onEmailChange }}" placeholder="ada@example.com" style="font-family:'Familjen Grotesk',sans-serif; font-size:15px; padding:12px 14px; border:1px solid rgba(0,0,0,0.08); border-radius:12px; background:rgba(255,255,255,0.9); color:#1D1D1F;" />
+                </div>
+                <div style="grid-column:span 2;">
+                  <button type="submit" style="background:#1D1D1F; color:#FFFFFF; font-size:15px; font-weight:600; padding:15px 28px; border:none; border-radius:14px; cursor:pointer; box-shadow:0 10px 24px rgba(29,29,31,0.2);" style-hover="{{ ctaHoverStyle }}">Send me the download</button>
+                </div>
+              </form>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showDownload }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="font-size:12px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:#2FA36B; margin-bottom:16px;">Download ready</div>
+              <p style="font-size:15.5px; line-height:1.6; color:#6E6E73; margin:0 0 28px;">Thanks, {{ formValues.firstName }} — your copy is ready below. Nothing else will land in your inbox unless you ask for it.</p>
+              <div style="display:flex; align-items:center; gap:22px; flex-wrap:wrap;">
+                <a href="#" onClick="{{ preventDefault }}" style="display:inline-flex; align-items:center; gap:10px; background:#CC785C; color:#FFFFFF; font-size:15px; font-weight:600; padding:16px 28px; border-radius:14px; text-decoration:none; box-shadow:0 12px 24px rgba(204,120,92,0.3);" style-hover="{{ downloadHoverStyle }}">Download {{ selectedResource.format }} <span>↓</span></a>
+                <button type="button" onClick="{{ backToLibrary }}" style="background:none; border:none; color:#8A8A90; font-size:14px; cursor:pointer; text-decoration:underline; padding:0;">Browse more resources</button>
+              </div>
+            </div>
+          </sc-if>
+
+        </div>
+      </div>
+    </section>
+  </sc-if>
+
+  <!-- CONTACT -->
+  <section data-screen-label="Contact" id="contact" style="max-width:640px; margin:0 auto; padding:0 48px 80px;">
+    <div style="font-size:12.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#CC785C; margin-bottom:14px;">Contact</div>
+    <h2 style="font-size:26px; font-weight:700; margin:0 0 14px; letter-spacing:-0.01em;">Questions, ideas, or a topic you want covered?</h2>
+    <p style="font-size:15px; color:#6E6E73; margin:0 0 28px;">Send a note below, or email <a href="mailto:hello@aiwithrick.com" style="color:#1D1D1F; font-weight:600; text-decoration:underline;">hello@aiwithrick.com</a> directly.</p>
+
+    <sc-if value="{{ contactSubmitted }}" hint-placeholder-val="{{ false }}">
+      <div style="font-size:15px; font-weight:600; color:#CC785C;">Thanks — I'll get back to you soon.</div>
+    </sc-if>
+    <sc-if value="{{ showContactForm }}" hint-placeholder-val="{{ true }}">
+      <form onSubmit="{{ handleContactSubmit }}" style="display:flex; flex-direction:column; gap:16px; max-width:480px;">
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <label style="font-size:13px; font-weight:600; color:#1D1D1F;">Name</label>
+          <input required="{{ true }}" value="{{ contactName }}" onChange="{{ onContactNameChange }}" placeholder="Ada Lovelace" style="font-family:'Familjen Grotesk',sans-serif; font-size:15px; padding:12px 14px; border:1px solid rgba(0,0,0,0.08); border-radius:12px; background:rgba(255,255,255,0.6); color:#1D1D1F;" />
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <label style="font-size:13px; font-weight:600; color:#1D1D1F;">Email</label>
+          <input required="{{ true }}" type="email" value="{{ contactEmail }}" onChange="{{ onContactEmailChange }}" placeholder="ada@example.com" style="font-family:'Familjen Grotesk',sans-serif; font-size:15px; padding:12px 14px; border:1px solid rgba(0,0,0,0.08); border-radius:12px; background:rgba(255,255,255,0.6); color:#1D1D1F;" />
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <label style="font-size:13px; font-weight:600; color:#1D1D1F;">Message</label>
+          <textarea required="{{ true }}" value="{{ contactMessage }}" onChange="{{ onContactMessageChange }}" placeholder="What's on your mind?" rows="4" style="font-family:'Familjen Grotesk',sans-serif; font-size:15px; padding:12px 14px; border:1px solid rgba(0,0,0,0.08); border-radius:12px; background:rgba(255,255,255,0.6); color:#1D1D1F; resize:vertical;"></textarea>
+        </div>
+        <div>
+          <button type="submit" style="background:#1D1D1F; color:#FFFFFF; font-size:15px; font-weight:600; padding:14px 26px; border:none; border-radius:14px; cursor:pointer;" style-hover="{{ ctaHoverStyle }}">Send message</button>
+        </div>
+      </form>
+    </sc-if>
+  </section>
+
+  <!-- FOOTER -->
+  <footer data-screen-label="Footer" style="max-width:1240px; margin:0 auto; padding:36px 48px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+    <div style="font-size:15px; font-weight:700;">AI with Rick</div>
+    <div style="font-size:13px; color:#8A8A90;">© 2026 · Practical notes on AI and modern tooling.</div>
+  </footer>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;lockedExampleVisible&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Library behavior&quot;}}">
+class Component extends DCLogic {
+  state = {
+    resources: [
+      { id: 'rag-pipeline', title: 'Building Your First RAG Pipeline', desc: "A practical walkthrough for wiring a retrieval layer to your LLM app — no vector-database hand-waving.", format: 'Video Walkthrough', date: 'Jul 2026', visible: true, featured: true },
+      { id: 'prompt-notes', title: 'Prompt Engineering Field Notes', desc: 'The patterns that actually move outputs, collected from a year of daily use.', format: 'PDF Guide', date: 'Jun 2026', visible: true, featured: false },
+      { id: 'local-llm-kit', title: 'The Local LLM Starter Kit', desc: 'Templates and checklists for running models on your own hardware.', format: 'Notion Template', date: 'May 2026', visible: true, featured: false },
+      { id: 'context-windows', title: 'Context Windows, Explained', desc: 'What actually happens to your prompt once it stops fitting.', format: 'PDF Guide', date: 'Apr 2026', visible: true, featured: false },
+      { id: 'workflow-automation', title: 'Automating Your Workflow with Claude', desc: 'Turn a repetitive weekly task into a five-minute script.', format: 'Video Walkthrough', date: 'Mar 2026', visible: true, featured: false },
+      { id: 'fine-tuning-playbook', title: 'The Advanced Fine-Tuning Playbook', desc: 'Dataset prep, eval loops, and the mistakes that waste a GPU budget.', format: 'Notion Template', date: 'Feb 2026', visible: false, featured: false },
+      { id: 'debugging-agent-loops', title: 'Debugging Agent Loops', desc: 'A one-page reference for the failure modes that keep agents stuck in circles.', format: 'Cheat Sheet', date: 'Jan 2026', visible: true, featured: false },
+      { id: 'local-evals-kit', title: 'A Starter Kit for Local Evals', desc: 'Runnable scripts for scoring your own prompts before you ship them.', format: 'Code Repo', date: 'Dec 2025', visible: true, featured: false },
+      { id: 'reading-model-cards', title: 'Reading Model Cards Like an Engineer', desc: 'What to skip, what to trust, and where the real limitations are usually buried.', format: 'PDF Guide', date: 'Nov 2025', visible: false, featured: false }
+    ],
+    view: 'library',
+    selectedId: null,
+    showDownloadForm: false,
+    submitted: false,
+    formValues: { firstName: '', lastName: '', email: '' },
+    newsletterEmail: '',
+    newsletterSubmitted: false,
+    contactName: '',
+    contactEmail: '',
+    contactMessage: '',
+    contactSubmitted: false
+  };
+
+  socialLinks = [
+    { name: 'Instagram', handle: '@aiwithrick', href: '#' },
+    { name: 'TikTok', handle: '@aiwithrick', href: '#' },
+    { name: 'YouTube', handle: '/aiwithrick', href: '#' },
+    { name: 'LinkedIn', handle: '/in/aiwithrick', href: '#' }
+  ];
+
+  handleNewsletterSubmit = (e) => {
+    e.preventDefault();
+    this.setState({ newsletterSubmitted: true });
+  };
+
+  onNewsletterEmailChange = (e) => {
+    this.setState({ newsletterEmail: e.target.value });
+  };
+
+  handleContactSubmit = (e) => {
+    e.preventDefault();
+    this.setState({ contactSubmitted: true });
+  };
+
+  onContactNameChange = (e) => { this.setState({ contactName: e.target.value }); };
+  onContactEmailChange = (e) => { this.setState({ contactEmail: e.target.value }); };
+  onContactMessageChange = (e) => { this.setState({ contactMessage: e.target.value }); };
+
+  selectResource = (id) => {
+    this.setState({
+      view: 'detail',
+      selectedId: id,
+      showDownloadForm: false,
+      submitted: false,
+      formValues: { firstName: '', lastName: '', email: '' }
+    }, () => window.scrollTo(0, 0));
+  };
+
+  backToLibrary = () => {
+    this.setState({ view: 'library', selectedId: null }, () => window.scrollTo(0, 0));
+  };
+
+  startDownloadFlow = () => {
+    this.setState({ showDownloadForm: true });
+  };
+
+  toggleVisibility = (id, e) => {
+    if (e) e.stopPropagation();
+    this.setState(s => ({
+      resources: s.resources.map(r => r.id === id ? { ...r, visible: !r.visible } : r)
+    }));
+  };
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+    this.setState({ submitted: true });
+  };
+
+  preventDefault = (e) => { e.preventDefault(); };
+
+  updateField = (field, value) => {
+    this.setState(s => ({ formValues: { ...s.formValues, [field]: value } }));
+  };
+
+  renderVals() {
+    const lockedExampleVisible = this.props.lockedExampleVisible ?? true;
+
+    const visibleResources = this.state.resources.filter(r => lockedExampleVisible || r.visible);
+
+    const cards = visibleResources.map(r => {
+      const locked = !r.visible;
+      const featured = r.featured && !locked;
+      return {
+        ...r,
+        showLocked: locked,
+        locked,
+        showFeatured: featured,
+        showNormal: !locked && !featured,
+        spanStyle: featured ? 'span 2' : 'span 1',
+        onOpen: locked ? undefined : () => this.selectResource(r.id),
+        onToggle: (e) => this.toggleVisibility(r.id, e)
+      };
+    });
+
+    const selectedResource = this.state.resources.find(r => r.id === this.state.selectedId) || null;
+
+    return {
+      cards,
+      isLibraryView: this.state.view === 'library',
+      isDetailView: this.state.view === 'detail',
+      selectedResource,
+      formValues: this.state.formValues,
+      showDownloadCta: !this.state.showDownloadForm && !this.state.submitted,
+      showForm: this.state.showDownloadForm && !this.state.submitted,
+      showDownload: this.state.submitted,
+      startDownloadFlow: this.startDownloadFlow,
+      handleSubmit: this.handleSubmit,
+      backToLibrary: this.backToLibrary,
+      preventDefault: this.preventDefault,
+      onFirstNameChange: (e) => this.updateField('firstName', e.target.value),
+      onLastNameChange: (e) => this.updateField('lastName', e.target.value),
+      onEmailChange: (e) => this.updateField('email', e.target.value),
+      navHoverStyle: { opacity: 0.7 },
+      ctaHoverStyle: { background: '#33333A' },
+      downloadHoverStyle: { background: '#B3634A' },
+      featuredHoverStyle: { transform: 'translateY(-2px)' },
+      normalHoverStyle: { transform: 'translateY(-2px)' },
+      videoCardHoverStyle: { boxShadow: '0 48px 90px rgba(31,41,89,0.24), 0 6px 20px rgba(31,41,89,0.12)' },
+      videoTitleHoverStyle: { textDecoration: 'underline' },
+      socialLinks: this.socialLinks,
+      newsletterEmail: this.state.newsletterEmail,
+      newsletterSubmitted: this.state.newsletterSubmitted,
+      showNewsletterForm: !this.state.newsletterSubmitted,
+      handleNewsletterSubmit: this.handleNewsletterSubmit,
+      onNewsletterEmailChange: this.onNewsletterEmailChange,
+      contactName: this.state.contactName,
+      contactEmail: this.state.contactEmail,
+      contactMessage: this.state.contactMessage,
+      contactSubmitted: this.state.contactSubmitted,
+      showContactForm: !this.state.contactSubmitted,
+      handleContactSubmit: this.handleContactSubmit,
+      onContactNameChange: this.onContactNameChange,
+      onContactEmailChange: this.onContactEmailChange,
+      onContactMessageChange: this.onContactMessageChange
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+"use server";
+
+import { sendContactNotification } from "@/lib/email";
+import { supabaseAdmin, SIGNED_URL_EXPIRY_SECONDS, STORAGE_BUCKET } from "@/lib/supabase/admin";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export interface LeadResult {
+  ok: boolean;
+  error?: string;
+  /** Signed download URL or the resource's external link. */
+  url?: string;
+  kind?: "file" | "external";
+}
+
+/**
+ * Lead-gated download: store the lead, optionally opt them into the
+ * newsletter, then return a short-lived signed URL (or external link).
+ */
+export async function captureLead(resourceId: string, formData: FormData): Promise<LeadResult> {
+  // Honeypot — real users never see or fill this field.
+  if (String(formData.get("website") ?? "") !== "") return { ok: false, error: "Something went wrong." };
+
+  const firstName = String(formData.get("firstName") ?? "").trim();
+  const lastName = String(formData.get("lastName") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const optIn = formData.get("newsletterOptIn") === "on";
+
+  if (!firstName || !lastName) return { ok: false, error: "Please fill in your first and last name." };
+  if (!EMAIL_RE.test(email)) return { ok: false, error: "That email doesn't look right." };
+
+  const db = supabaseAdmin();
+
+  // Only published resources can be downloaded.
+  const { data: resource } = await db
+    .from("resources")
+    .select("id, file_path, external_url, visible")
+    .eq("id", resourceId)
+    .eq("visible", true)
+    .maybeSingle();
+  if (!resource) return { ok: false, error: "This resource is no longer available." };
+
+  const { error: leadError } = await db.from("leads").insert({
+    resource_id: resourceId,
+    first_name: firstName,
+    last_name: lastName,
+    email,
+    newsletter_opt_in: optIn,
+  });
+  if (leadError) {
+    console.error("[leads] insert failed", leadError);
+    return { ok: false, error: "Couldn't save your details — please try again." };
+  }
+
+  if (optIn) {
+    const { error } = await db
+      .from("newsletter_subscribers")
+      .upsert({ email, unsubscribed_at: null }, { onConflict: "email" });
+    if (error) console.error("[leads] newsletter opt-in failed", error);
+  }
+
+  if (resource.file_path) {
+    const { data, error } = await db.storage
+      .from(STORAGE_BUCKET)
+      .createSignedUrl(resource.file_path, SIGNED_URL_EXPIRY_SECONDS, {
+        download: true,
+      });
+    if (error || !data?.signedUrl) {
+      console.error("[leads] signed URL failed", error);
+      return { ok: false, error: "Couldn't prepare your download — please try again." };
+    }
+    return { ok: true, url: data.signedUrl, kind: "file" };
+  }
+
+  if (resource.external_url) return { ok: true, url: resource.external_url, kind: "external" };
+
+  return { ok: false, error: "This resource has no download yet — check back soon." };
+}
+
+export async function subscribeNewsletter(formData: FormData): Promise<{ ok: boolean; error?: string }> {
+  if (String(formData.get("website") ?? "") !== "") return { ok: false, error: "Something went wrong." };
+
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  if (!EMAIL_RE.test(email)) return { ok: false, error: "That email doesn't look right." };
+
+  // Upsert: duplicates are fine, and a previously-unsubscribed address
+  // that signs up again is re-activated.
+  const { error } = await supabaseAdmin()
+    .from("newsletter_subscribers")
+    .upsert({ email, unsubscribed_at: null }, { onConflict: "email" });
+
+  if (error) {
+    console.error("[newsletter] upsert failed", error);
+    return { ok: false, error: "Couldn't subscribe you — please try again." };
+  }
+  return { ok: true };
+}
+
+export async function submitContact(formData: FormData): Promise<{ ok: boolean; error?: string }> {
+  if (String(formData.get("website") ?? "") !== "") return { ok: false, error: "Something went wrong." };
+
+  const name = String(formData.get("name") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim();
+  const message = String(formData.get("message") ?? "").trim();
+
+  if (!name || !message) return { ok: false, error: "Please fill in every field." };
+  if (!EMAIL_RE.test(email)) return { ok: false, error: "That email doesn't look right." };
+
+  const { error } = await supabaseAdmin().from("contact_messages").insert({ name, email, message });
+  if (error) {
+    console.error("[contact] insert failed", error);
+    return { ok: false, error: "Couldn't send your message — please try again." };
+  }
+
+  await sendContactNotification({ name, email, message });
+  return { ok: true };
+}
