@@ -22,6 +22,15 @@ export const siteConfig = {
   ],
 } as const;
 
+/**
+ * YouTube thumbnail for a watch/short URL. hqdefault always exists; its 4:3
+ * letterbox bars are cropped away by the card's 16:9 `object-fit: cover` frame.
+ */
+export function youtubeThumbnail(url: string): string | null {
+  const match = url.match(/(?:youtu\.be\/|[?&]v=|\/shorts\/|\/embed\/)([\w-]{11})/);
+  return match ? `https://i.ytimg.com/vi/${match[1]}/hqdefault.jpg` : null;
+}
+
 /** Absolute site URL, used for unsubscribe links in newsletter emails. */
 export function siteUrl(path = ""): string {
   const base =

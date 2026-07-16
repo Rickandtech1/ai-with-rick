@@ -1,6 +1,9 @@
-import { siteConfig } from "@/lib/site-config";
+import Image from "next/image";
+import { siteConfig, youtubeThumbnail } from "@/lib/site-config";
 
 export function Hero() {
+  const thumbnail = youtubeThumbnail(siteConfig.heroVideo.url);
+
   return (
     <section className="hero">
       <div>
@@ -21,13 +24,24 @@ export function Hero() {
           rel="noopener noreferrer"
           className="video-card"
         >
-          <div>
+          {thumbnail && (
+            <div className="video-card-media">
+              <Image
+                src={thumbnail}
+                alt=""
+                fill
+                sizes="248px"
+                className="video-card-thumb"
+              />
+              <div className="play-button">
+                <span className="play-glyph" />
+              </div>
+            </div>
+          )}
+          <div className="video-card-body">
             <div className="video-card-label">Video Walkthrough · YouTube</div>
             <div className="video-card-title">{siteConfig.heroVideo.title}</div>
             <div className="video-card-caption">{siteConfig.heroVideo.caption}</div>
-          </div>
-          <div className="play-button">
-            <span className="play-glyph" />
           </div>
         </a>
       </div>
