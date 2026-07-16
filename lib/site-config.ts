@@ -6,7 +6,7 @@
 export const siteConfig = {
   name: "AI with Rick",
   tagline: "Practical AI knowledge, minus the hype.",
-  contactEmail: "hello@aiwithrick.com",
+  contactEmail: "aiwithrick@gmail.com",
   youtubeChannel: "https://www.youtube.com/@aiwithrick",
   social: [
     { name: "Instagram", handle: "@aiwithrick", href: "https://www.instagram.com/aiwithrick" },
