@@ -56,6 +56,11 @@ export default function LoginPage() {
           </div>
         </form>
         {error && <p className="form-error">{error}</p>}
+        <p style={{ marginTop: 18, marginBottom: 0 }}>
+          <a href="/forgot-password" className="btn-text">
+            Forgot password?
+          </a>
+        </p>
       </div>
     </section>
   );
