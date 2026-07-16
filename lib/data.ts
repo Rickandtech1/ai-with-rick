@@ -1,3 +1,4 @@
+import { siteConfig, type HeroVideo } from "./site-config";
 import { createSupabaseServerClient } from "./supabase/server";
 import type { Resource } from "./types";
 
@@ -17,6 +18,21 @@ export async function getVisibleResources(): Promise<Resource[]> {
     return [];
   }
   return (data as Resource[]) ?? [];
+}
+
+/** Hero video card content, managed in /admin. Falls back to site-config. */
+export async function getHeroVideo(): Promise<HeroVideo> {
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from("site_settings")
+    .select("value")
+    .eq("key", "hero_video")
+    .maybeSingle();
+  const value = data?.value as Partial<HeroVideo> | undefined;
+  if (value?.url && value.title) {
+    return { url: value.url, title: value.title, caption: value.caption ?? "" };
+  }
+  return { ...siteConfig.heroVideo };
 }
 
 export async function getVisibleResource(id: string): Promise<Resource | null> {

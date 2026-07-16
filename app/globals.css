@@ -138,6 +138,13 @@ a {
   margin: 10px 0 0;
 }
 
+.form-success {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--success);
+  margin: 10px 0 0;
+}
+
 /* Honeypot — visually gone, still in the DOM for bots */
 .hp-field {
   position: absolute;

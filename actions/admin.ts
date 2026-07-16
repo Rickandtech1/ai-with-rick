@@ -4,6 +4,7 @@ import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 import { requireAdminAction } from "@/lib/auth";
 import { sendNewsletterBatch } from "@/lib/email";
+import { youtubeVideoId } from "@/lib/site-config";
 import { supabaseAdmin, STORAGE_BUCKET } from "@/lib/supabase/admin";
 import { RESOURCE_FORMATS, type ResourceFormat } from "@/lib/types";
 
@@ -168,6 +169,52 @@ export async function sendNewsletter(formData: FormData): Promise<SendNewsletter
   await db.from("newsletters").insert({ subject, body_md: bodyMd, recipient_count: sent });
   revalidatePath("/admin/newsletter");
   return { ok: true, sent };
+}
+
+/**
+ * Point the hero card at a different YouTube video. Title and channel
+ * come from YouTube's oEmbed endpoint, so the admin only pastes a URL.
+ */
+export async function updateHeroVideo(formData: FormData): Promise<ActionResult> {
+  await requireAdminAction();
+
+  const url = String(formData.get("url") ?? "").trim();
+  const videoId = youtubeVideoId(url);
+  if (!videoId) {
+    return { ok: false, error: "That doesn't look like a YouTube video link." };
+  }
+  // Canonical watch URL — drops playlist/radio params from pasted links.
+  const cleanUrl = `https://www.youtube.com/watch?v=${videoId}`;
+
+  let title: string;
+  let caption: string;
+  try {
+    const res = await fetch(
+      `https://www.youtube.com/oembed?url=${encodeURIComponent(cleanUrl)}&format=json`
+    );
+    if (!res.ok) {
+      return { ok: false, error: "YouTube didn't recognize that link — is the video public?" };
+    }
+    const meta = (await res.json()) as { title?: string; author_name?: string };
+    title = meta.title ?? "";
+    caption = meta.author_name ? `${meta.author_name} on YouTube` : "";
+  } catch {
+    return { ok: false, error: "Couldn't reach YouTube to look up the video. Try again." };
+  }
+  if (!title) return { ok: false, error: "YouTube returned no title for that video." };
+
+  const { error } = await supabaseAdmin()
+    .from("site_settings")
+    .upsert({
+      key: "hero_video",
+      value: { url: cleanUrl, title, caption },
+      updated_at: new Date().toISOString(),
+    });
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/");
+  revalidatePath("/admin/hero");
+  return { ok: true };
 }
 
 export async function signOut(): Promise<void> {

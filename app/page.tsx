@@ -4,19 +4,19 @@ import { NewsletterPanel } from "@/components/NewsletterPanel";
 import { ResourceCard } from "@/components/ResourceCard";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
-import { getVisibleResources } from "@/lib/data";
+import { getHeroVideo, getVisibleResources } from "@/lib/data";
 
 // Always render from the live database so a publish in /admin shows up
 // on the very next page load — no redeploy, no stale cache.
 export const dynamic = "force-dynamic";
 
 export default async function LibraryPage() {
-  const resources = await getVisibleResources();
+  const [resources, heroVideo] = await Promise.all([getVisibleResources(), getHeroVideo()]);
 
   return (
     <div>
       <SiteHeader variant="library" />
-      <Hero />
+      <Hero video={heroVideo} />
 
       <section className="resources-section" id="resources">
         <div className="resources-heading">

@@ -8,7 +8,11 @@ export const siteConfig = {
   tagline: "Practical AI knowledge, minus the hype.",
   contactEmail: "aiwithrick@gmail.com",
   youtubeChannel: "https://www.youtube.com/@aiwithrick",
-  /** The featured video on the hero card (right side of the hero). */
+  /**
+   * Fallback for the hero video card (right side of the hero). The live
+   * value is managed in /admin → Hero video and stored in site_settings;
+   * this is only used until that row exists.
+   */
   heroVideo: {
     url: "https://www.youtube.com/watch?v=I9RZlnD4H88",
     title: "Relaxing Smooth Jazz | Soft Female Vocals & Tender Love Lyrics to Relax Your Soul",
@@ -22,13 +26,25 @@ export const siteConfig = {
   ],
 } as const;
 
+export interface HeroVideo {
+  url: string;
+  title: string;
+  caption: string;
+}
+
+/** The 11-character video id from any YouTube watch/share/shorts/embed URL. */
+export function youtubeVideoId(url: string): string | null {
+  const match = url.match(/(?:youtu\.be\/|[?&]v=|\/shorts\/|\/embed\/)([\w-]{11})/);
+  return match ? match[1] : null;
+}
+
 /**
  * YouTube thumbnail for a watch/short URL. hqdefault always exists; its 4:3
  * letterbox bars are cropped away by the card's 16:9 `object-fit: cover` frame.
  */
 export function youtubeThumbnail(url: string): string | null {
-  const match = url.match(/(?:youtu\.be\/|[?&]v=|\/shorts\/|\/embed\/)([\w-]{11})/);
-  return match ? `https://i.ytimg.com/vi/${match[1]}/hqdefault.jpg` : null;
+  const id = youtubeVideoId(url);
+  return id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null;
 }
 
 /** Absolute site URL, used for unsubscribe links in newsletter emails. */
