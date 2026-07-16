@@ -8,6 +8,12 @@ export const siteConfig = {
   tagline: "Practical AI knowledge, minus the hype.",
   contactEmail: "aiwithrick@gmail.com",
   youtubeChannel: "https://www.youtube.com/@aiwithrick",
+  /** The featured video on the hero card (right side of the hero). */
+  heroVideo: {
+    url: "https://www.youtube.com/watch?v=I9RZlnD4H88",
+    title: "Relaxing Smooth Jazz | Soft Female Vocals & Tender Love Lyrics to Relax Your Soul",
+    caption: "Milesora Lounge on YouTube",
+  },
   social: [
     { name: "Instagram", handle: "@aiwithrick", href: "https://www.instagram.com/aiwithrick" },
     { name: "TikTok", handle: "@aiwithrick", href: "https://www.tiktok.com/@aiwithrick" },

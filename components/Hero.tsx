@@ -16,15 +16,15 @@ export function Hero() {
       </div>
       <div className="hero-visual">
         <a
-          href={siteConfig.youtubeChannel}
+          href={siteConfig.heroVideo.url}
           target="_blank"
           rel="noopener noreferrer"
           className="video-card"
         >
           <div>
             <div className="video-card-label">Video Walkthrough · YouTube</div>
-            <div className="video-card-title">Building Your First RAG Pipeline</div>
-            <div className="video-card-caption">A practical walkthrough, no hand-waving.</div>
+            <div className="video-card-title">{siteConfig.heroVideo.title}</div>
+            <div className="video-card-caption">{siteConfig.heroVideo.caption}</div>
           </div>
           <div className="play-button">
             <span className="play-glyph" />
