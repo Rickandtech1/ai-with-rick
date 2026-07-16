@@ -329,15 +329,19 @@ a {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: var(--accent);
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 12px 20px rgba(204, 120, 92, 0.4), 0 0 0 6px rgba(255, 255, 255, 0.3);
-  transition: transform 0.2s ease;
+  box-shadow: 0 8px 18px rgba(31, 41, 89, 0.18);
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 .video-card:hover .play-button {
   transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.35);
 }
 .play-glyph {
   width: 0;
