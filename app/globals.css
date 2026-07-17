@@ -355,6 +355,91 @@ a {
 /* ============================================================
    Resources
    ============================================================ */
+.resources-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 18px;
+}
+.view-toggle {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 100px;
+  padding: 3px;
+}
+.view-toggle button {
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 6px 16px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.view-toggle button.active {
+  background: #ffffff;
+  color: var(--ink);
+  box-shadow: 0 2px 8px rgba(31, 41, 89, 0.1);
+}
+.resource-list {
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(26px);
+  -webkit-backdrop-filter: blur(26px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 20px;
+  padding: 6px 26px;
+  box-shadow: 0 14px 30px rgba(31, 41, 89, 0.08);
+}
+.resource-list-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+  color: var(--ink);
+}
+.resource-list-row:last-child {
+  border-bottom: none;
+}
+.resource-list-row:hover .resource-list-title {
+  color: var(--accent);
+}
+.resource-list-title {
+  font-size: 15.5px;
+  font-weight: 600;
+  transition: color 0.15s ease;
+}
+.resource-list-title .pill {
+  margin-left: 10px;
+}
+.resource-list-meta {
+  font-size: 12.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.show-more-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+@media (max-width: 640px) {
+  .resource-list {
+    padding: 4px 18px;
+  }
+  .resource-list-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
+
 .resources-section {
   max-width: 1240px;
   margin: 0 auto;

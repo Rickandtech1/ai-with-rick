@@ -147,6 +147,14 @@ export function ResourceForm({ resource }: { resource?: Resource }) {
           <input type="checkbox" name="featured" defaultChecked={resource?.featured ?? false} />
           Featured (the big card)
         </label>
+        <label className="check-row">
+          <input
+            type="checkbox"
+            name="require_lead"
+            defaultChecked={resource?.require_lead ?? true}
+          />
+          Require name &amp; email before download
+        </label>
       </div>
 
       <div>

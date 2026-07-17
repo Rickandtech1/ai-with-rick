@@ -18,6 +18,8 @@ export interface Resource {
   file_path: string | null;
   /** Optional markdown twin of the main file, offered as a second download. */
   md_path: string | null;
+  /** When false, the download skips the name/email form entirely. */
+  require_lead: boolean;
   external_url: string | null;
   visible: boolean;
   featured: boolean;

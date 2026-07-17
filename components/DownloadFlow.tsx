@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
-import { captureLead } from "@/actions/public";
+import { captureLead, getDirectDownload } from "@/actions/public";
 
 interface Props {
   resourceId: string;
@@ -10,9 +10,11 @@ interface Props {
   /** Link-out resources (e.g. video walkthroughs with no file) skip the lead gate. */
   externalOnly: boolean;
   externalUrl: string | null;
+  /** When false, the admin turned the lead form off — download directly. */
+  requireLead: boolean;
 }
 
-export function DownloadFlow({ resourceId, format, externalOnly, externalUrl }: Props) {
+export function DownloadFlow({ resourceId, format, externalOnly, externalUrl, requireLead }: Props) {
   const [step, setStep] = useState<"cta" | "form" | "ready">("cta");
   const [firstName, setFirstName] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
@@ -35,10 +37,34 @@ export function DownloadFlow({ resourceId, format, externalOnly, externalUrl }: 
   return (
     <div className="download-zone">
       {step === "cta" && (
-        <button type="button" className="btn-dark" onClick={() => setStep("form")}>
-          Download {format} <span>↓</span>
+        <button
+          type="button"
+          className="btn-dark"
+          disabled={pending}
+          onClick={() => {
+            if (requireLead) {
+              setStep("form");
+              return;
+            }
+            // Ungated resource: fetch the signed links straight away.
+            startTransition(async () => {
+              const result = await getDirectDownload(resourceId);
+              if (result.ok && result.url) {
+                setDownloadUrl(result.url);
+                setMdUrl(result.mdUrl ?? null);
+                setKind(result.kind ?? "file");
+                setError(null);
+                setStep("ready");
+              } else {
+                setError(result.error ?? "Something went wrong — please try again.");
+              }
+            });
+          }}
+        >
+          {pending ? "One moment…" : <>Download {format} <span>↓</span></>}
         </button>
       )}
+      {step === "cta" && error && <p className="form-error">{error}</p>}
 
       {step === "form" && (
         <div>
@@ -113,7 +139,9 @@ export function DownloadFlow({ resourceId, format, externalOnly, externalUrl }: 
       {step === "ready" && downloadUrl && (
         <div>
           <div className="download-ready-label">Download ready</div>
-          <p className="download-ready-copy">Thanks, {firstName} — your copy is ready below.</p>
+          <p className="download-ready-copy">
+            {firstName ? <>Thanks, {firstName} — your copy is ready below.</> : <>Your copy is ready below.</>}
+          </p>
           <div className="download-ready-actions">
             <a
               href={downloadUrl}

@@ -37,6 +37,7 @@ export async function saveResource(formData: FormData): Promise<ActionResult> {
   const externalUrl = String(formData.get("external_url") ?? "").trim() || null;
   const visible = formData.get("visible") === "on";
   const featured = formData.get("featured") === "on";
+  const requireLead = formData.get("require_lead") === "on";
   const file = formData.get("file");
   const mdFile = formData.get("md_file");
 
@@ -84,6 +85,7 @@ export async function saveResource(formData: FormData): Promise<ActionResult> {
     external_url: externalUrl,
     visible,
     featured,
+    require_lead: requireLead,
     ...(filePath ? { file_path: filePath } : {}),
     ...(mdPath ? { md_path: mdPath } : {}),
   };

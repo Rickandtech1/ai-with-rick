@@ -1,7 +1,7 @@
 import { ContactSection } from "@/components/ContactSection";
 import { Hero } from "@/components/Hero";
 import { NewsletterPanel } from "@/components/NewsletterPanel";
-import { ResourceCard } from "@/components/ResourceCard";
+import { ResourceGrid } from "@/components/ResourceGrid";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { getHeroVideo, getVisibleResources } from "@/lib/data";
@@ -28,16 +28,16 @@ export default async function LibraryPage() {
             Everything I&apos;ve put together so far. Pick one to read and download.
           </p>
         </div>
-        <div className="resource-grid">
-          {resources.length === 0 ? (
+        {resources.length === 0 ? (
+          <div className="resource-grid">
             <div className="resources-empty">
               The first resources are on their way — subscribe below and you&apos;ll hear the moment
               they land.
             </div>
-          ) : (
-            resources.map((r) => <ResourceCard key={r.id} resource={r} />)
-          )}
-        </div>
+          </div>
+        ) : (
+          <ResourceGrid resources={resources} />
+        )}
       </section>
 
       <NewsletterPanel />

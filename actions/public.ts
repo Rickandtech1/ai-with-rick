@@ -62,6 +62,34 @@ export async function captureLead(resourceId: string, formData: FormData): Promi
     if (error) console.error("[leads] newsletter opt-in failed", error);
   }
 
+  return signDownloadUrls(resource);
+}
+
+/**
+ * Instant download for resources whose admin turned the lead gate off
+ * (require_lead = false). Refuses gated resources, so the flag stays
+ * enforced server-side even if the action is called directly.
+ */
+export async function getDirectDownload(resourceId: string): Promise<LeadResult> {
+  const db = supabaseAdmin();
+  const { data: resource } = await db
+    .from("resources")
+    .select("*")
+    .eq("id", resourceId)
+    .eq("visible", true)
+    .maybeSingle();
+  if (!resource) return { ok: false, error: "This resource is no longer available." };
+  if (resource.require_lead ?? true) return { ok: false, error: "This download needs the form." };
+  return signDownloadUrls(resource);
+}
+
+async function signDownloadUrls(resource: {
+  file_path: string | null;
+  md_path?: string | null;
+  external_url: string | null;
+}): Promise<LeadResult> {
+  const db = supabaseAdmin();
+
   if (resource.file_path) {
     const { data, error } = await db.storage
       .from(STORAGE_BUCKET)
@@ -69,7 +97,7 @@ export async function captureLead(resourceId: string, formData: FormData): Promi
         download: true,
       });
     if (error || !data?.signedUrl) {
-      console.error("[leads] signed URL failed", error);
+      console.error("[download] signed URL failed", error);
       return { ok: false, error: "Couldn't prepare your download — please try again." };
     }
 

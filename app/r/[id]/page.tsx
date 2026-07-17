@@ -42,6 +42,7 @@ export default async function ResourceDetailPage({
             format={resource.format}
             externalOnly={externalOnly}
             externalUrl={resource.external_url}
+            requireLead={resource.require_lead ?? true}
           />
         </div>
       </section>
