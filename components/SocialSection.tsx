@@ -1,3 +1,4 @@
+import { SocialIcon } from "@/components/SocialIcon";
 import { siteConfig } from "@/lib/site-config";
 
 export function SocialSection() {
@@ -21,7 +22,10 @@ export function SocialSection() {
             rel="noopener noreferrer"
             className="social-tile"
           >
-            <span className="social-tile-name">{s.name}</span>
+            <span className="social-tile-name">
+              <SocialIcon name={s.name} />
+              {s.name}
+            </span>
             <span className="social-tile-handle">
               {s.handle} <span>→</span>
             </span>
