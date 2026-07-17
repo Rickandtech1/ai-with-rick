@@ -144,7 +144,7 @@ export function DownloadFlow({ resourceId, format, externalOnly, externalUrl, re
           </p>
           {kind === "file" && (
             <div className="view-row">
-              <Link href={`/r/${resourceId}/view`} className="btn-ghost">
+              <Link href={`/r/${resourceId}/view`} className="btn-green">
                 View {format} <span>→</span>
               </Link>
             </div>
