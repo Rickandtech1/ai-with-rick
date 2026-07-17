@@ -12,8 +12,6 @@ export interface LeadResult {
   url?: string;
   /** Signed URL for the markdown version, when the resource has one. */
   mdUrl?: string;
-  /** Signed URL that renders the file inline (preview in a new tab). */
-  viewUrl?: string;
   kind?: "file" | "external";
 }
 
@@ -110,13 +108,7 @@ async function signDownloadUrls(resource: {
         .createSignedUrl(resource.md_path, SIGNED_URL_EXPIRY_SECONDS, { download: true });
       mdUrl = mdData?.signedUrl;
     }
-
-    // Same file, inline disposition — browsers preview it instead of saving.
-    const { data: viewData } = await db.storage
-      .from(STORAGE_BUCKET)
-      .createSignedUrl(resource.file_path, SIGNED_URL_EXPIRY_SECONDS);
-
-    return { ok: true, url: data.signedUrl, mdUrl, viewUrl: viewData?.signedUrl, kind: "file" };
+    return { ok: true, url: data.signedUrl, mdUrl, kind: "file" };
   }
 
   if (resource.external_url) return { ok: true, url: resource.external_url, kind: "external" };

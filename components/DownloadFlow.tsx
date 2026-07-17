@@ -19,7 +19,6 @@ export function DownloadFlow({ resourceId, format, externalOnly, externalUrl, re
   const [firstName, setFirstName] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [mdUrl, setMdUrl] = useState<string | null>(null);
-  const [viewUrl, setViewUrl] = useState<string | null>(null);
   const [kind, setKind] = useState<"file" | "external">("file");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -53,7 +52,6 @@ export function DownloadFlow({ resourceId, format, externalOnly, externalUrl, re
               if (result.ok && result.url) {
                 setDownloadUrl(result.url);
                 setMdUrl(result.mdUrl ?? null);
-                setViewUrl(result.viewUrl ?? null);
                 setKind(result.kind ?? "file");
                 setError(null);
                 setStep("ready");
@@ -82,7 +80,6 @@ export function DownloadFlow({ resourceId, format, externalOnly, externalUrl, re
                 if (result.ok && result.url) {
                   setDownloadUrl(result.url);
                   setMdUrl(result.mdUrl ?? null);
-                  setViewUrl(result.viewUrl ?? null);
                   setKind(result.kind ?? "file");
                   setError(null);
                   setStep("ready");
@@ -145,11 +142,11 @@ export function DownloadFlow({ resourceId, format, externalOnly, externalUrl, re
           <p className="download-ready-copy">
             {firstName ? <>Thanks, {firstName} — your copy is ready below.</> : <>Your copy is ready below.</>}
           </p>
-          {viewUrl && (
+          {kind === "file" && (
             <div className="view-row">
-              <a href={viewUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost">
-                View {format} <span>↗</span>
-              </a>
+              <Link href={`/r/${resourceId}/view`} className="btn-ghost">
+                View {format} <span>→</span>
+              </Link>
             </div>
           )}
           <div className="download-ready-actions">
