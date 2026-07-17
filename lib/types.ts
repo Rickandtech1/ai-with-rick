@@ -16,6 +16,8 @@ export interface Resource {
   published_date: string;
   body_content: string;
   file_path: string | null;
+  /** Optional markdown twin of the main file, offered as a second download. */
+  md_path: string | null;
   external_url: string | null;
   visible: boolean;
   featured: boolean;

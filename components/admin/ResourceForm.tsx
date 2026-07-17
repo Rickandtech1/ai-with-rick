@@ -110,6 +110,18 @@ export function ResourceForm({ resource }: { resource?: Resource }) {
       </div>
 
       <div className="field-group">
+        <label className="field-label" htmlFor="res-md-file">
+          Markdown version{" "}
+          <span className="admin-note">
+            {resource?.md_path
+              ? `(current: ${resource.md_path} — choose a new file to replace it)`
+              : "(optional .md twin of the file — shown as a second download button)"}
+          </span>
+        </label>
+        <input id="res-md-file" type="file" name="md_file" accept=".md,.markdown,text/markdown" className="field" />
+      </div>
+
+      <div className="field-group">
         <label className="field-label" htmlFor="res-url">
           External URL{" "}
           <span className="admin-note">

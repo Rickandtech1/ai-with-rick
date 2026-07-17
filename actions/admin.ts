@@ -38,6 +38,7 @@ export async function saveResource(formData: FormData): Promise<ActionResult> {
   const visible = formData.get("visible") === "on";
   const featured = formData.get("featured") === "on";
   const file = formData.get("file");
+  const mdFile = formData.get("md_file");
 
   if (!title) return { ok: false, error: "Title is required." };
   if (!RESOURCE_FORMATS.includes(format)) return { ok: false, error: "Pick a valid format." };
@@ -56,6 +57,18 @@ export async function saveResource(formData: FormData): Promise<ActionResult> {
     filePath = path;
   }
 
+  let mdPath: string | undefined;
+  if (mdFile instanceof File && mdFile.size > 0) {
+    const path = `${randomUUID()}-${safeFileName(mdFile.name)}`;
+    const { error } = await db.storage
+      .from(STORAGE_BUCKET)
+      .upload(path, Buffer.from(await mdFile.arrayBuffer()), {
+        contentType: "text/markdown",
+      });
+    if (error) return { ok: false, error: `Markdown upload failed: ${error.message}` };
+    mdPath = path;
+  }
+
   // "At most one featured": clear the old one first (a partial unique
   // index backs this up at the database level).
   if (featured) {
@@ -72,19 +85,25 @@ export async function saveResource(formData: FormData): Promise<ActionResult> {
     visible,
     featured,
     ...(filePath ? { file_path: filePath } : {}),
+    ...(mdPath ? { md_path: mdPath } : {}),
   };
 
   if (id) {
-    // Replace an old stored file if a new one was uploaded.
+    // Replace old stored files if new ones were uploaded.
     let oldPath: string | null = null;
-    if (filePath) {
-      const { data: existing } = await db.from("resources").select("file_path").eq("id", id).maybeSingle();
+    let oldMdPath: string | null = null;
+    if (filePath || mdPath) {
+      const { data: existing } = await db.from("resources").select("*").eq("id", id).maybeSingle();
       oldPath = existing?.file_path ?? null;
+      oldMdPath = existing?.md_path ?? null;
     }
     const { error } = await db.from("resources").update(row).eq("id", id);
     if (error) return { ok: false, error: error.message };
     if (filePath && oldPath && oldPath !== filePath) {
       await db.storage.from(STORAGE_BUCKET).remove([oldPath]);
+    }
+    if (mdPath && oldMdPath && oldMdPath !== mdPath) {
+      await db.storage.from(STORAGE_BUCKET).remove([oldMdPath]);
     }
     revalidatePublic(id);
     return { ok: true, id };
@@ -122,12 +141,13 @@ export async function deleteResource(id: string): Promise<ActionResult> {
   await requireAdminAction();
   const db = supabaseAdmin();
 
-  const { data: existing } = await db.from("resources").select("file_path").eq("id", id).maybeSingle();
+  const { data: existing } = await db.from("resources").select("*").eq("id", id).maybeSingle();
   const { error } = await db.from("resources").delete().eq("id", id);
   if (error) return { ok: false, error: error.message };
 
-  if (existing?.file_path) {
-    await db.storage.from(STORAGE_BUCKET).remove([existing.file_path]);
+  const orphaned = [existing?.file_path, existing?.md_path].filter(Boolean) as string[];
+  if (orphaned.length > 0) {
+    await db.storage.from(STORAGE_BUCKET).remove(orphaned);
   }
   revalidatePublic(id);
   revalidatePath("/admin");

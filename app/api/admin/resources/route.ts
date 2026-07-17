@@ -14,8 +14,9 @@ import { RESOURCE_FORMATS } from "@/lib/types";
  * Either application/json:
  *   { title, description, format, published_date?, body_content?,
  *     external_url?, file_path?, visible?, featured? }
- * or multipart/form-data with the same fields plus a `file` part,
- * which is uploaded to the private bucket in the same call.
+ * or multipart/form-data with the same fields plus a `file` part
+ * (and optionally a markdown twin as `md_file`), uploaded to the
+ * private bucket in the same call.
  */
 
 function authorized(request: NextRequest): boolean {
@@ -54,6 +55,7 @@ export async function POST(request: NextRequest) {
   const db = supabaseAdmin();
   let input: ResourceInput;
   let file: File | null = null;
+  let mdFile: File | null = null;
 
   try {
     const contentType = request.headers.get("content-type") ?? "";
@@ -61,6 +63,8 @@ export async function POST(request: NextRequest) {
       const form = await request.formData();
       const maybeFile = form.get("file");
       if (maybeFile instanceof File && maybeFile.size > 0) file = maybeFile;
+      const maybeMd = form.get("md_file");
+      if (maybeMd instanceof File && maybeMd.size > 0) mdFile = maybeMd;
       input = {
         title: String(form.get("title") ?? "").trim(),
         description: String(form.get("description") ?? "").trim(),
@@ -112,6 +116,19 @@ export async function POST(request: NextRequest) {
     input.file_path = path;
   }
 
+  let mdPath: string | null = null;
+  if (mdFile) {
+    const safeName = mdFile.name.replace(/[^a-zA-Z0-9._-]+/g, "-").slice(-100) || "file.md";
+    const path = `${randomUUID()}-${safeName}`;
+    const { error } = await db.storage
+      .from(STORAGE_BUCKET)
+      .upload(path, Buffer.from(await mdFile.arrayBuffer()), { contentType: "text/markdown" });
+    if (error) {
+      return NextResponse.json({ error: `Markdown upload failed: ${error.message}` }, { status: 500 });
+    }
+    mdPath = path;
+  }
+
   if (input.featured) {
     await db.from("resources").update({ featured: false }).eq("featured", true);
   }
@@ -128,6 +145,7 @@ export async function POST(request: NextRequest) {
       file_path: input.file_path,
       visible: input.visible,
       featured: input.featured,
+      ...(mdPath ? { md_path: mdPath } : {}),
     })
     .select("*")
     .single();

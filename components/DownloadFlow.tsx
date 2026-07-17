@@ -16,6 +16,7 @@ export function DownloadFlow({ resourceId, format, externalOnly, externalUrl }: 
   const [step, setStep] = useState<"cta" | "form" | "ready">("cta");
   const [firstName, setFirstName] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [mdUrl, setMdUrl] = useState<string | null>(null);
   const [kind, setKind] = useState<"file" | "external">("file");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -52,6 +53,7 @@ export function DownloadFlow({ resourceId, format, externalOnly, externalUrl }: 
                 const result = await captureLead(resourceId, formData);
                 if (result.ok && result.url) {
                   setDownloadUrl(result.url);
+                  setMdUrl(result.mdUrl ?? null);
                   setKind(result.kind ?? "file");
                   setError(null);
                   setStep("ready");
@@ -111,10 +113,7 @@ export function DownloadFlow({ resourceId, format, externalOnly, externalUrl }: 
       {step === "ready" && downloadUrl && (
         <div>
           <div className="download-ready-label">Download ready</div>
-          <p className="download-ready-copy">
-            Thanks, {firstName} — your copy is ready below. Nothing else will land in your inbox
-            unless you ask for it.
-          </p>
+          <p className="download-ready-copy">Thanks, {firstName} — your copy is ready below.</p>
           <div className="download-ready-actions">
             <a
               href={downloadUrl}
@@ -125,6 +124,11 @@ export function DownloadFlow({ resourceId, format, externalOnly, externalUrl }: 
             >
               {kind === "external" ? <>Open {format}</> : <>Download {format}</>} <span>↓</span>
             </a>
+            {mdUrl && (
+              <a href={mdUrl} className="btn-dark">
+                Download Markdown <span>↓</span>
+              </a>
+            )}
             <Link href="/" className="btn-text">
               Browse more resources
             </Link>

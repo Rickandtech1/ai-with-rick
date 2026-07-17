@@ -10,6 +10,8 @@ export interface LeadResult {
   error?: string;
   /** Signed download URL or the resource's external link. */
   url?: string;
+  /** Signed URL for the markdown version, when the resource has one. */
+  mdUrl?: string;
   kind?: "file" | "external";
 }
 
@@ -31,10 +33,11 @@ export async function captureLead(resourceId: string, formData: FormData): Promi
 
   const db = supabaseAdmin();
 
-  // Only published resources can be downloaded.
+  // Only published resources can be downloaded. (select * so the code
+  // keeps working whether or not optional columns like md_path exist yet.)
   const { data: resource } = await db
     .from("resources")
-    .select("id, file_path, external_url, visible")
+    .select("*")
     .eq("id", resourceId)
     .eq("visible", true)
     .maybeSingle();
@@ -69,7 +72,15 @@ export async function captureLead(resourceId: string, formData: FormData): Promi
       console.error("[leads] signed URL failed", error);
       return { ok: false, error: "Couldn't prepare your download — please try again." };
     }
-    return { ok: true, url: data.signedUrl, kind: "file" };
+
+    let mdUrl: string | undefined;
+    if (resource.md_path) {
+      const { data: mdData } = await db.storage
+        .from(STORAGE_BUCKET)
+        .createSignedUrl(resource.md_path, SIGNED_URL_EXPIRY_SECONDS, { download: true });
+      mdUrl = mdData?.signedUrl;
+    }
+    return { ok: true, url: data.signedUrl, mdUrl, kind: "file" };
   }
 
   if (resource.external_url) return { ok: true, url: resource.external_url, kind: "external" };

@@ -49,8 +49,11 @@ export function youtubeThumbnail(url: string): string | null {
 
 /** Absolute site URL, used for unsubscribe links in newsletter emails. */
 export function siteUrl(path = ""): string {
+  // Tolerate messy env values (stray whitespace, accidental multi-line pastes):
+  // the first whitespace-separated token is the URL.
+  const configured = (process.env.NEXT_PUBLIC_SITE_URL ?? "").trim().split(/\s+/)[0];
   const base =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+    configured.replace(/\/$/, "") ||
     (process.env.VERCEL_ENV === "production"
       ? "https://ai-with-rick.vercel.app"
       : process.env.VERCEL_URL
