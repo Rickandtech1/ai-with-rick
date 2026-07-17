@@ -14,6 +14,9 @@ export function SiteHeader({ variant }: { variant: "library" | "detail" }) {
           <a href="#resources" className="nav-link nav-link--accent">
             Resources
           </a>
+          <a href="#social" className="nav-link nav-link--ink">
+            Follow Social Media
+          </a>
           <a href="#contact" className="nav-link nav-link--ink">
             Contact
           </a>
