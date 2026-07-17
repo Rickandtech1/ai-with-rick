@@ -51,6 +51,10 @@ export function youtubeThumbnail(url: string): string | null {
 export function siteUrl(path = ""): string {
   const base =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+    (process.env.VERCEL_ENV === "production"
+      ? "https://ai-with-rick.vercel.app"
+      : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "http://localhost:3000");
   return `${base}${path}`;
 }
