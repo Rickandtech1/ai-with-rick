@@ -145,6 +145,13 @@ export function DownloadFlow({ resourceId, format, externalOnly, externalUrl, re
           <p className="download-ready-copy">
             {firstName ? <>Thanks, {firstName} — your copy is ready below.</> : <>Your copy is ready below.</>}
           </p>
+          {viewUrl && (
+            <div className="view-row">
+              <a href={viewUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost">
+                View {format} <span>↗</span>
+              </a>
+            </div>
+          )}
           <div className="download-ready-actions">
             <a
               href={downloadUrl}
@@ -158,11 +165,6 @@ export function DownloadFlow({ resourceId, format, externalOnly, externalUrl, re
             {mdUrl && (
               <a href={mdUrl} className="btn-dark">
                 Download Markdown <span>↓</span>
-              </a>
-            )}
-            {viewUrl && (
-              <a href={viewUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost">
-                View <span>↗</span>
               </a>
             )}
             <Link href="/" className="btn-text">
