@@ -19,6 +19,7 @@ export function DownloadFlow({ resourceId, format, externalOnly, externalUrl, re
   const [firstName, setFirstName] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [mdUrl, setMdUrl] = useState<string | null>(null);
+  const [viewUrl, setViewUrl] = useState<string | null>(null);
   const [kind, setKind] = useState<"file" | "external">("file");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -52,6 +53,7 @@ export function DownloadFlow({ resourceId, format, externalOnly, externalUrl, re
               if (result.ok && result.url) {
                 setDownloadUrl(result.url);
                 setMdUrl(result.mdUrl ?? null);
+                setViewUrl(result.viewUrl ?? null);
                 setKind(result.kind ?? "file");
                 setError(null);
                 setStep("ready");
@@ -80,6 +82,7 @@ export function DownloadFlow({ resourceId, format, externalOnly, externalUrl, re
                 if (result.ok && result.url) {
                   setDownloadUrl(result.url);
                   setMdUrl(result.mdUrl ?? null);
+                  setViewUrl(result.viewUrl ?? null);
                   setKind(result.kind ?? "file");
                   setError(null);
                   setStep("ready");
@@ -155,6 +158,11 @@ export function DownloadFlow({ resourceId, format, externalOnly, externalUrl, re
             {mdUrl && (
               <a href={mdUrl} className="btn-dark">
                 Download Markdown <span>↓</span>
+              </a>
+            )}
+            {viewUrl && (
+              <a href={viewUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost">
+                View <span>↗</span>
               </a>
             )}
             <Link href="/" className="btn-text">

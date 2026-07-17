@@ -86,6 +86,26 @@ a {
   cursor: default;
 }
 
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.35);
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 15px 26px;
+  border: 1.5px solid rgba(29, 29, 31, 0.25);
+  border-radius: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(29, 29, 31, 0.45);
+}
+
 .btn-accent {
   display: inline-flex;
   align-items: center;
