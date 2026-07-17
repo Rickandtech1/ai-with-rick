@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react";
 import { subscribeNewsletter } from "@/actions/public";
-import { siteConfig } from "@/lib/site-config";
 
 function NewsletterForm() {
   const [submitted, setSubmitted] = useState(false);
@@ -55,7 +54,7 @@ function NewsletterForm() {
 export function NewsletterPanel() {
   return (
     <section className="newsletter-section">
-      <div className="newsletter-panel">
+      <div className="newsletter-panel newsletter-panel--solo">
         <div>
           <div className="eyebrow" style={{ marginBottom: 16 }}>
             Stay in the loop
@@ -65,22 +64,6 @@ export function NewsletterPanel() {
             One note when something new lands in the library. No spam, unsubscribe anytime.
           </p>
           <NewsletterForm />
-        </div>
-        <div>
-          <div className="eyebrow" style={{ marginBottom: 16 }}>
-            Follow along
-          </div>
-          <h2 className="panel-heading" style={{ marginBottom: 20 }}>
-            Find more on social
-          </h2>
-          <div className="social-list">
-            {siteConfig.social.map((s) => (
-              <a key={s.name} href={s.href} target="_blank" rel="noopener noreferrer">
-                <span className="social-name">{s.name}</span>
-                <span className="social-handle">{s.handle} →</span>
-              </a>
-            ))}
-          </div>
         </div>
       </div>
     </section>

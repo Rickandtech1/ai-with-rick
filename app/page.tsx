@@ -3,6 +3,7 @@ import { Hero } from "@/components/Hero";
 import { NewsletterPanel } from "@/components/NewsletterPanel";
 import { ResourceGrid } from "@/components/ResourceGrid";
 import { SiteFooter } from "@/components/SiteFooter";
+import { SocialSection } from "@/components/SocialSection";
 import { SiteHeader } from "@/components/SiteHeader";
 import { getHeroVideo, getVisibleResources } from "@/lib/data";
 
@@ -40,6 +41,7 @@ export default async function LibraryPage() {
         )}
       </section>
 
+      <SocialSection />
       <NewsletterPanel />
       <ContactSection />
       <SiteFooter />
