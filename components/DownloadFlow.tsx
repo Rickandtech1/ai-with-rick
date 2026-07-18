@@ -1,38 +1,77 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { captureLead, getDirectDownload } from "@/actions/public";
+import { captureLead } from "@/actions/public";
+
+/** Remembered after the first form submit — no visitor is asked twice. */
+const CONTACT_KEY = "awr-contact";
+
+interface Contact {
+  firstName: string;
+  lastName: string;
+  email: string;
+  optIn: boolean;
+}
+
+function storedContact(): Contact | null {
+  try {
+    const raw = window.localStorage.getItem(CONTACT_KEY);
+    if (!raw) return null;
+    const c = JSON.parse(raw) as Contact;
+    return c.firstName && c.email ? c : null;
+  } catch {
+    return null;
+  }
+}
+
+function contactFormData(c: Contact): FormData {
+  const fd = new FormData();
+  fd.set("firstName", c.firstName);
+  fd.set("lastName", c.lastName);
+  fd.set("email", c.email);
+  if (c.optIn) fd.set("newsletterOptIn", "on");
+  fd.set("website", "");
+  return fd;
+}
+
+type Action = "view" | "pdf" | "md";
 
 interface Props {
   resourceId: string;
   format: string;
-  /** Link-out resources (e.g. video walkthroughs with no file) skip the lead gate. */
+  /** Link-out resources (e.g. video walkthroughs with no file) skip everything. */
   externalOnly: boolean;
   externalUrl: string | null;
-  /** When false, the admin turned the lead form off — download directly. */
-  requireLead: boolean;
+  /** Whether a markdown edition exists (shows the third button). */
+  hasMd: boolean;
   /** Hidden on the reader page, where you're already viewing. */
   showView?: boolean;
 }
 
+/**
+ * Gated download flow. All buttons are visible immediately; the first
+ * click anywhere asks for contact details once. Returning visitors are
+ * recognized and never asked again — each unlock still records a lead
+ * for the specific resource.
+ */
 export function DownloadFlow({
   resourceId,
   format,
   externalOnly,
   externalUrl,
-  requireLead,
+  hasMd,
   showView = true,
 }: Props) {
-  const [step, setStep] = useState<"cta" | "form" | "ready">("cta");
+  const router = useRouter();
+  const [step, setStep] = useState<"locked" | "form" | "ready">("locked");
+  const [urls, setUrls] = useState<{ url: string; mdUrl?: string } | null>(null);
   const [firstName, setFirstName] = useState("");
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
-  const [mdUrl, setMdUrl] = useState<string | null>(null);
-  const [kind, setKind] = useState<"file" | "external">("file");
+  const [pendingAction, setPendingAction] = useState<Action>("pdf");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  // Video walkthroughs (and other link-outs) with no gated file: link out directly.
   if (externalOnly && externalUrl) {
     return (
       <div className="download-zone">
@@ -43,37 +82,93 @@ export function DownloadFlow({
     );
   }
 
+  const perform = (action: Action, url: string, mdUrl?: string) => {
+    if (action === "view") router.push(`/r/${resourceId}/view`);
+    else if (action === "md" && mdUrl) window.location.assign(mdUrl);
+    else window.location.assign(url);
+  };
+
+  const capture = (contact: Contact, action: Action, remember: boolean) => {
+    startTransition(async () => {
+      const result = await captureLead(resourceId, contactFormData(contact));
+      if (result.ok && result.url) {
+        if (remember) {
+          try {
+            window.localStorage.setItem(CONTACT_KEY, JSON.stringify(contact));
+          } catch {}
+        }
+        setUrls({ url: result.url, mdUrl: result.mdUrl });
+        setFirstName(contact.firstName);
+        setError(null);
+        setStep("ready");
+        perform(action, result.url, result.mdUrl);
+      } else {
+        setError(result.error ?? "Something went wrong — please try again.");
+        setStep("form");
+      }
+    });
+  };
+
+  const unlock = (action: Action) => {
+    setPendingAction(action);
+    const known = storedContact();
+    if (known) capture(known, action, false);
+    else setStep("form");
+  };
+
+  const buttonRows = (asLinks: boolean) => (
+    <>
+      {showView && (
+        <div className="view-row">
+          {asLinks ? (
+            <Link href={`/r/${resourceId}/view`} className="btn-green">
+              View {format} <span>→</span>
+            </Link>
+          ) : (
+            <button type="button" className="btn-green" disabled={pending} onClick={() => unlock("view")}>
+              View {format} <span>→</span>
+            </button>
+          )}
+        </div>
+      )}
+      <div className="download-ready-actions">
+        {asLinks && urls ? (
+          <a href={urls.url} className="btn-accent">
+            Download {format} <span>↓</span>
+          </a>
+        ) : (
+          <button type="button" className="btn-accent" disabled={pending} onClick={() => unlock("pdf")}>
+            Download {format} <span>↓</span>
+          </button>
+        )}
+        {hasMd &&
+          (asLinks && urls?.mdUrl ? (
+            <a href={urls.mdUrl} className="btn-dark">
+              Download Markdown <span>↓</span>
+            </a>
+          ) : (
+            <button type="button" className="btn-dark" disabled={pending} onClick={() => unlock("md")}>
+              Download Markdown <span>↓</span>
+            </button>
+          ))}
+        {asLinks && (
+          <Link href="/" className="btn-text">
+            Browse more resources
+          </Link>
+        )}
+      </div>
+    </>
+  );
+
   return (
     <div className="download-zone">
-      {step === "cta" && (
-        <button
-          type="button"
-          className="btn-dark"
-          disabled={pending}
-          onClick={() => {
-            if (requireLead) {
-              setStep("form");
-              return;
-            }
-            // Ungated resource: fetch the signed links straight away.
-            startTransition(async () => {
-              const result = await getDirectDownload(resourceId);
-              if (result.ok && result.url) {
-                setDownloadUrl(result.url);
-                setMdUrl(result.mdUrl ?? null);
-                setKind(result.kind ?? "file");
-                setError(null);
-                setStep("ready");
-              } else {
-                setError(result.error ?? "Something went wrong — please try again.");
-              }
-            });
-          }}
-        >
-          {pending ? "One moment…" : <>Download {format} <span>↓</span></>}
-        </button>
+      {step === "locked" && (
+        <div>
+          {buttonRows(false)}
+          {pending && <p className="admin-note" style={{ marginTop: 12 }}>One moment…</p>}
+          {error && <p className="form-error">{error}</p>}
+        </div>
       )}
-      {step === "cta" && error && <p className="form-error">{error}</p>}
 
       {step === "form" && (
         <div>
@@ -82,20 +177,18 @@ export function DownloadFlow({
             className="download-form"
             onSubmit={(e) => {
               e.preventDefault();
-              const formData = new FormData(e.currentTarget);
-              setFirstName(String(formData.get("firstName") ?? "").trim());
-              startTransition(async () => {
-                const result = await captureLead(resourceId, formData);
-                if (result.ok && result.url) {
-                  setDownloadUrl(result.url);
-                  setMdUrl(result.mdUrl ?? null);
-                  setKind(result.kind ?? "file");
-                  setError(null);
-                  setStep("ready");
-                } else {
-                  setError(result.error ?? "Something went wrong — please try again.");
-                }
-              });
+              const fd = new FormData(e.currentTarget);
+              if (String(fd.get("website") ?? "") !== "") return;
+              capture(
+                {
+                  firstName: String(fd.get("firstName") ?? "").trim(),
+                  lastName: String(fd.get("lastName") ?? "").trim(),
+                  email: String(fd.get("email") ?? "").trim(),
+                  optIn: fd.get("newsletterOptIn") === "on",
+                },
+                pendingAction,
+                true
+              );
             }}
           >
             <input
@@ -137,7 +230,7 @@ export function DownloadFlow({
             </label>
             <div className="full">
               <button type="submit" className="btn-dark" disabled={pending}>
-                {pending ? "One moment…" : "Send me the download"}
+                {pending ? "One moment…" : "Unlock my downloads"}
               </button>
             </div>
           </form>
@@ -145,38 +238,13 @@ export function DownloadFlow({
         </div>
       )}
 
-      {step === "ready" && downloadUrl && (
+      {step === "ready" && urls && (
         <div>
           <div className="download-ready-label">Download ready</div>
           <p className="download-ready-copy">
-            {firstName ? <>Thanks, {firstName} — your copy is ready below.</> : <>Your copy is ready below.</>}
+            {firstName ? <>Thanks, {firstName} — your downloads are unlocked below.</> : <>Your downloads are unlocked below.</>}
           </p>
-          {kind === "file" && showView && (
-            <div className="view-row">
-              <Link href={`/r/${resourceId}/view`} className="btn-green">
-                View {format} <span>→</span>
-              </Link>
-            </div>
-          )}
-          <div className="download-ready-actions">
-            <a
-              href={downloadUrl}
-              className="btn-accent"
-              {...(kind === "external"
-                ? { target: "_blank", rel: "noopener noreferrer" }
-                : {})}
-            >
-              {kind === "external" ? <>Open {format}</> : <>Download {format}</>} <span>↓</span>
-            </a>
-            {mdUrl && (
-              <a href={mdUrl} className="btn-dark">
-                Download Markdown <span>↓</span>
-              </a>
-            )}
-            <Link href="/" className="btn-text">
-              Browse more resources
-            </Link>
-          </div>
+          {buttonRows(true)}
         </div>
       )}
     </div>

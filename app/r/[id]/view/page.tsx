@@ -74,7 +74,7 @@ export default async function ResourceReaderPage({
                 format={resource.format}
                 externalOnly={!resource.file_path && !!resource.external_url}
                 externalUrl={resource.external_url}
-                requireLead={resource.require_lead ?? true}
+                hasMd={!!resource.md_path}
                 showView={false}
               />
             )}
