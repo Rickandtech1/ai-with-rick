@@ -38,6 +38,8 @@ export async function saveResource(formData: FormData): Promise<ActionResult> {
   const visible = formData.get("visible") === "on";
   const featured = formData.get("featured") === "on";
   const requireLead = formData.get("require_lead") === "on";
+  const slug = String(formData.get("slug") ?? "").trim().toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "") || null;
+  const youtubeUrl = String(formData.get("youtube_url") ?? "").trim() || null;
   const file = formData.get("file");
   const mdFile = formData.get("md_file");
 
@@ -86,6 +88,10 @@ export async function saveResource(formData: FormData): Promise<ActionResult> {
     visible,
     featured,
     require_lead: requireLead,
+    // Written only when provided, so admin saves keep working until
+    // migration 0005 adds these columns.
+    ...(slug ? { slug } : {}),
+    ...(youtubeUrl ? { youtube_url: youtubeUrl } : {}),
     ...(filePath ? { file_path: filePath } : {}),
     ...(mdPath ? { md_path: mdPath } : {}),
   };

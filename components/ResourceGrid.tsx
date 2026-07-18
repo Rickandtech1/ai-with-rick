@@ -58,7 +58,7 @@ export function ResourceGrid({ resources }: { resources: Resource[] }) {
       ) : (
         <div className="resource-list">
           {visible.map((r) => (
-            <Link key={r.id} href={`/r/${r.id}`} className="resource-list-row">
+            <Link key={r.id} href={`/r/${r.slug ?? r.id}`} className="resource-list-row">
               <span className="resource-list-title">
                 {r.title}
                 {r.featured && <span className="pill pill--featured">Featured</span>}

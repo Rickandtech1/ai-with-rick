@@ -11,6 +11,26 @@ import { formatResourceDate } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const resource = await getVisibleResource(id);
+  if (!resource) return {};
+  const og = `/api/og?title=${encodeURIComponent(resource.title)}&eyebrow=${encodeURIComponent(
+    `${resource.format} · Free download`
+  )}`;
+  return {
+    title: `${resource.title} — AI with Rick`,
+    description: resource.description,
+    openGraph: { title: resource.title, description: resource.description, images: [og] },
+    twitter: {
+      card: "summary_large_image",
+      title: resource.title,
+      description: resource.description,
+      images: [og],
+    },
+  };
+}
+
 export default async function ResourceDetailPage({
   params,
 }: {
@@ -53,6 +73,19 @@ export default async function ResourceDetailPage({
           </div>
           <h1 className="detail-title">{resource.title}</h1>
           <p className="detail-lede">{resource.description}</p>
+          {resource.youtube_url && (
+            <p style={{ margin: "0 0 28px" }}>
+              <a
+                href={resource.youtube_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-text"
+                style={{ color: "#CC785C", fontWeight: 600 }}
+              >
+                ▶ Watch the video version on YouTube
+              </a>
+            </p>
+          )}
 
           {bodyHtml && (
             <div className="detail-body" dangerouslySetInnerHTML={{ __html: bodyHtml }} />

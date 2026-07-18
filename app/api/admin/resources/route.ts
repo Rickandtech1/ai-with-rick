@@ -40,6 +40,8 @@ interface ResourceInput {
   visible: boolean;
   featured: boolean;
   require_lead: boolean;
+  slug: string | null;
+  youtube_url: string | null;
 }
 
 function parseBool(value: unknown, fallback: boolean): boolean {
@@ -77,6 +79,8 @@ export async function POST(request: NextRequest) {
         visible: parseBool(form.get("visible"), true),
         featured: parseBool(form.get("featured"), false),
         require_lead: parseBool(form.get("require_lead"), false),
+        slug: String(form.get("slug") ?? "").trim() || null,
+        youtube_url: String(form.get("youtube_url") ?? "").trim() || null,
       };
     } else {
       const body = await request.json();
@@ -91,6 +95,8 @@ export async function POST(request: NextRequest) {
         visible: parseBool(body.visible, true),
         featured: parseBool(body.featured, false),
         require_lead: parseBool(body.require_lead, false),
+        slug: body.slug ? String(body.slug) : null,
+        youtube_url: body.youtube_url ? String(body.youtube_url) : null,
       };
     }
   } catch {
@@ -149,6 +155,8 @@ export async function POST(request: NextRequest) {
       visible: input.visible,
       featured: input.featured,
       require_lead: input.require_lead,
+      ...(input.slug ? { slug: input.slug } : {}),
+      ...(input.youtube_url ? { youtube_url: input.youtube_url } : {}),
       ...(mdPath ? { md_path: mdPath } : {}),
     })
     .select("*")

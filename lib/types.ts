@@ -20,6 +20,10 @@ export interface Resource {
   md_path: string | null;
   /** When false, the download skips the name/email form entirely. */
   require_lead: boolean;
+  /** Speakable URL segment (/r/<slug>); falls back to the id when null. */
+  slug: string | null;
+  /** The matching YouTube video, shown as "Watch the video version". */
+  youtube_url: string | null;
   external_url: string | null;
   visible: boolean;
   featured: boolean;

@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@vercel/analytics";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -92,6 +93,7 @@ export function DownloadFlow({
     startTransition(async () => {
       const result = await captureLead(resourceId, contactFormData(contact));
       if (result.ok && result.url) {
+        track("lead_captured", { resource: resourceId, silent: !remember });
         if (remember) {
           try {
             window.localStorage.setItem(CONTACT_KEY, JSON.stringify(contact));

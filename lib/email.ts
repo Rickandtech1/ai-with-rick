@@ -70,6 +70,41 @@ export function renderNewsletterHtml(bodyMd: string, unsubscribeUrl: string): st
 </html>`;
 }
 
+/**
+ * One-time welcome for new subscribers. Best-effort: in Resend sandbox
+ * mode this only delivers to the account owner, so failures are logged
+ * and swallowed — it starts working for everyone once a domain is verified.
+ */
+export async function sendWelcomeEmail(email: string, unsubscribeToken: string): Promise<void> {
+  const resend = getResend();
+  if (!resend) return;
+  const body = [
+    `Hey — Rick here. Thanks for joining.`,
+    ``,
+    `You'll get **one short note** whenever something new lands in the library — no schedule-filler, no spam.`,
+    ``,
+    `While you're here, three good places to start:`,
+    ``,
+    `- [Vibe Coding, Honestly](${siteUrl("/")}) — ship your first app with AI, no code`,
+    `- [AI Agents, Explained for Busy People](${siteUrl("/")}) — cut through this year's buzzword`,
+    `- [Run a Local LLM Tonight](${siteUrl("/")}) — private, free AI on your own laptop`,
+    ``,
+    `Everything is free to read and download: [browse the library](${siteUrl("/")}).`,
+    ``,
+    `— Rick`,
+  ].join("\n");
+  try {
+    await resend.emails.send({
+      from: fromAddress(),
+      to: email,
+      subject: "Welcome — here's where to start",
+      html: renderNewsletterHtml(body, siteUrl(`/unsubscribe?token=${unsubscribeToken}`)),
+    });
+  } catch (err) {
+    console.error("[email] welcome email failed (non-fatal)", err);
+  }
+}
+
 export interface NewsletterRecipient {
   email: string;
   unsubscribe_token: string;

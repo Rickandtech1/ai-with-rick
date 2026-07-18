@@ -109,6 +109,34 @@ export function ResourceForm({ resource }: { resource?: Resource }) {
         <input id="res-file" type="file" name="file" className="field" />
       </div>
 
+      <div className="admin-form-row">
+        <div className="field-group">
+          <label className="field-label" htmlFor="res-slug">
+            URL slug <span className="admin-note">(e.g. vibe-coding — speakable link /r/slug)</span>
+          </label>
+          <input
+            id="res-slug"
+            name="slug"
+            defaultValue={resource?.slug ?? ""}
+            placeholder="my-guide-name"
+            className="field"
+          />
+        </div>
+        <div className="field-group">
+          <label className="field-label" htmlFor="res-youtube">
+            YouTube video URL <span className="admin-note">(shows “watch the video version”)</span>
+          </label>
+          <input
+            id="res-youtube"
+            type="url"
+            name="youtube_url"
+            defaultValue={resource?.youtube_url ?? ""}
+            placeholder="https://www.youtube.com/watch?v=…"
+            className="field"
+          />
+        </div>
+      </div>
+
       <div className="field-group">
         <label className="field-label" htmlFor="res-md-file">
           Markdown version{" "}

@@ -1,7 +1,35 @@
 "use server";
 
-import { sendContactNotification } from "@/lib/email";
+import { sendContactNotification, sendWelcomeEmail } from "@/lib/email";
 import { supabaseAdmin, SIGNED_URL_EXPIRY_SECONDS, STORAGE_BUCKET } from "@/lib/supabase/admin";
+
+/**
+ * Upsert a subscriber; send the welcome email only when they weren't
+ * already active (so re-submits and dupes never double-send).
+ */
+async function subscribeAndWelcome(
+  db: ReturnType<typeof supabaseAdmin>,
+  email: string
+): Promise<{ ok: boolean }> {
+  const { data: existing } = await db
+    .from("newsletter_subscribers")
+    .select("unsubscribed_at")
+    .eq("email", email)
+    .maybeSingle();
+  const wasActive = !!existing && existing.unsubscribed_at === null;
+
+  const { data: row, error } = await db
+    .from("newsletter_subscribers")
+    .upsert({ email, unsubscribed_at: null }, { onConflict: "email" })
+    .select("unsubscribe_token")
+    .single();
+  if (error) return { ok: false };
+
+  if (!wasActive && row?.unsubscribe_token) {
+    await sendWelcomeEmail(email, row.unsubscribe_token);
+  }
+  return { ok: true };
+}
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -56,10 +84,8 @@ export async function captureLead(resourceId: string, formData: FormData): Promi
   }
 
   if (optIn) {
-    const { error } = await db
-      .from("newsletter_subscribers")
-      .upsert({ email, unsubscribed_at: null }, { onConflict: "email" });
-    if (error) console.error("[leads] newsletter opt-in failed", error);
+    const { ok } = await subscribeAndWelcome(db, email);
+    if (!ok) console.error("[leads] newsletter opt-in failed");
   }
 
   return signDownloadUrls(resource);
@@ -122,14 +148,10 @@ export async function subscribeNewsletter(formData: FormData): Promise<{ ok: boo
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   if (!EMAIL_RE.test(email)) return { ok: false, error: "That email doesn't look right." };
 
-  // Upsert: duplicates are fine, and a previously-unsubscribed address
-  // that signs up again is re-activated.
-  const { error } = await supabaseAdmin()
-    .from("newsletter_subscribers")
-    .upsert({ email, unsubscribed_at: null }, { onConflict: "email" });
-
-  if (error) {
-    console.error("[newsletter] upsert failed", error);
+  // Duplicates are fine; a previously-unsubscribed address that signs
+  // up again is re-activated (and re-welcomed).
+  const { ok } = await subscribeAndWelcome(supabaseAdmin(), email);
+  if (!ok) {
     return { ok: false, error: "Couldn't subscribe you — please try again." };
   }
   return { ok: true };

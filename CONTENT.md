@@ -48,6 +48,8 @@ That's it. Details below are for Claude.
      -F "body_content=<content/sources/<slug>-body.md" \
      -F "visible=true" -F "featured=false" \
      -F "require_lead=false" \         # default false = instant download; true = email form first
+     -F "slug=<slug>" \                # speakable URL: /r/<slug> (kebab-case)
+     -F "youtube_url=https://…" \      # optional: shows "watch the video version"
      -F "file=@content/out/<slug>.pdf;type=application/pdf" \
      -F "md_file=@content/out/<slug>.md;type=text/markdown"
    ```
@@ -67,6 +69,23 @@ That's it. Details below are for Claude.
 - **Gating**: flagship guides gated (`require_lead=true`), quick references ungated — Rick's call per resource.
 - Card descriptions ≤ ~140 chars, no trailing period needed, benefit-first.
 - Commit new `content/sources/*.md` files to git afterwards — they're the canonical sources.
+
+## YouTube-first companion pack
+
+When Rick provides a YouTube link + transcript ("new content from this video"),
+produce the full pack from that one source:
+
+1. Site resource (steps above) with `youtube_url` set and a slug that matches
+   how Rick would say it on camera — reply with the final `/r/<slug>` URL for
+   the video description.
+2. Newsletter draft — leave the composed markdown for Rick to paste in
+   /admin/newsletter (subject + ~150-word note + link).
+3. IG/LinkedIn carousel — 7 slides, 1080×1350, brand colors/fonts (use the
+   installed carousel/canvas skills); save PNGs to `content/out/<slug>-carousel/`.
+4. 3 short-form hook scripts (15–30 s) for TikTok/Shorts, each a different angle.
+5. LinkedIn text post — different hook than the video title, ends with the link.
+
+Voice everywhere: practical, no hype. Every asset links back to the resource URL.
 
 ## Other admin surfaces (no code)
 

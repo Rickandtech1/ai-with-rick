@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@vercel/analytics";
 import { useState, useTransition } from "react";
 import { subscribeNewsletter } from "@/actions/public";
 
@@ -21,8 +22,10 @@ function NewsletterForm() {
           const formData = new FormData(e.currentTarget);
           startTransition(async () => {
             const result = await subscribeNewsletter(formData);
-            if (result.ok) setSubmitted(true);
-            else setError(result.error ?? "Something went wrong.");
+            if (result.ok) {
+              setSubmitted(true);
+              track("newsletter_subscribed");
+            } else setError(result.error ?? "Something went wrong.");
           });
         }}
       >

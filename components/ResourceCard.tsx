@@ -5,7 +5,7 @@ export function ResourceCard({ resource }: { resource: Resource }) {
   const featured = resource.featured;
   return (
     <Link
-      href={`/r/${resource.id}`}
+      href={`/r/${resource.slug ?? resource.id}`}
       className={featured ? "resource-card resource-card--featured" : "resource-card"}
     >
       <div className="resource-card-meta">

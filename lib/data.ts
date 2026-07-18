@@ -35,8 +35,17 @@ export async function getHeroVideo(): Promise<HeroVideo> {
   return { ...siteConfig.heroVideo };
 }
 
-export async function getVisibleResource(id: string): Promise<Resource | null> {
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Look a resource up by UUID or by slug (pretty URL). */
+export async function getVisibleResource(idOrSlug: string): Promise<Resource | null> {
   const supabase = await createSupabaseServerClient();
-  const { data } = await supabase.from("resources").select("*").eq("id", id).maybeSingle();
+  const column = UUID_RE.test(idOrSlug) ? "id" : "slug";
+  const { data, error } = await supabase
+    .from("resources")
+    .select("*")
+    .eq(column, idOrSlug)
+    .maybeSingle();
+  if (error) return null; // e.g. slug column not migrated yet
   return (data as Resource) ?? null;
 }
