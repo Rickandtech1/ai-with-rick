@@ -3,10 +3,12 @@ import { notFound } from "next/navigation";
 import { ContactSection } from "@/components/ContactSection";
 import { CopyCodeButtons } from "@/components/CopyCodeButtons";
 import { DownloadFlow } from "@/components/DownloadFlow";
+import { ShareButtons } from "@/components/ShareButtons";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { getVisibleResource } from "@/lib/data";
 import { markdownToHtml } from "@/lib/markdown";
+import { siteUrl } from "@/lib/site-config";
 import { supabaseAdmin, SIGNED_URL_EXPIRY_SECONDS, STORAGE_BUCKET } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -57,6 +59,11 @@ export default async function ResourceReaderPage({
         <div className="detail-panel">
           <div className="reader-body" dangerouslySetInnerHTML={{ __html: markdownToHtml(content) }} />
           <CopyCodeButtons />
+
+          <ShareButtons
+            title={resource.title}
+            url={siteUrl(`/r/${resource.slug ?? resource.id}`)}
+          />
 
           <div className="reader-footer">
             {pdfUrl ? (
