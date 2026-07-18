@@ -25,10 +25,14 @@ That's it. Details below are for Claude.
    2 intro paragraphs, `## What's inside` bullets, `## Who it's for`. Renderer
    supports: paragraphs, ##/###, -, 1., **bold**, *italic*, `code`, [links](https://…),
    tables, ``` fences.
-3. **Build the branded PDF** — extend a copy of the pattern in
-   `content/build_pdfs.py` / `build_pdfs2.py` (Familjen Grotesk fonts in
-   `content/fonts/`, terracotta #CC785C accents, cream code blocks, footer).
-   Requires a Python venv with `reportlab` + `pypdf`. Output lands in `content/out/`.
+3. **Build the branded PDF** — one command via the generic converter:
+
+   ```bash
+   python content/md_to_pdf.py content/sources/<slug>.md content/out/<slug>.pdf "PDF Guide · AI with Rick"
+   ```
+
+   (venv with `reportlab`; fonts ship in `content/fonts/`. It renders the same
+   markdown subset as the site. `build_pdfs*.py` are older bespoke examples.)
 4. **Publish in one call** — multipart POST to the live API:
 
    ```bash
