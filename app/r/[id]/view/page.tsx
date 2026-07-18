@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ContactSection } from "@/components/ContactSection";
+import { CopyCodeButtons } from "@/components/CopyCodeButtons";
 import { DownloadFlow } from "@/components/DownloadFlow";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -55,6 +56,7 @@ export default async function ResourceReaderPage({
       <section className="detail-section">
         <div className="detail-panel">
           <div className="reader-body" dangerouslySetInnerHTML={{ __html: markdownToHtml(content) }} />
+          <CopyCodeButtons />
 
           <div className="reader-footer">
             {pdfUrl ? (
