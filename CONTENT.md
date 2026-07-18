@@ -21,6 +21,8 @@ That's it. Details below are for Claude.
    (this is what the on-site reader page at `/r/<id>/view` renders, and what the
    "Download Markdown" button serves). Style reference: the existing files in
    `content/sources/`. Voice: practical, no hype, first-person Rick.
+   Put copy-worthy prompts/commands in ``` fenced blocks — the reader page
+   gives every fence a Copy button automatically.
 2. **Write the web write-up** — `content/sources/<slug>-body.md`, ~250–350 words:
    2 intro paragraphs, `## What's inside` bullets, `## Who it's for`. Renderer
    supports: paragraphs, ##/###, -, 1., **bold**, *italic*, `code`, [links](https://…),
