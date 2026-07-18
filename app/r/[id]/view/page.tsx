@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ContactSection } from "@/components/ContactSection";
+import { DownloadFlow } from "@/components/DownloadFlow";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { getVisibleResource } from "@/lib/data";
@@ -37,9 +38,14 @@ export default async function ResourceReaderPage({
           <div className="reader-body" dangerouslySetInnerHTML={{ __html: markdownToHtml(content) }} />
 
           <div className="reader-footer">
-            <Link href={`/r/${resource.id}`} className="btn-accent">
-              Download {resource.format} <span>↓</span>
-            </Link>
+            <DownloadFlow
+              resourceId={resource.id}
+              format={resource.format}
+              externalOnly={!resource.file_path && !!resource.external_url}
+              externalUrl={resource.external_url}
+              requireLead={resource.require_lead ?? true}
+              showView={false}
+            />
             <Link href={`/r/${resource.id}`} className="btn-text">
               ← Back to the resource page
             </Link>

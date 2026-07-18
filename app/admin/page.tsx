@@ -3,6 +3,7 @@ import {
   DeleteResourceButton,
   EditResourceLink,
   FeaturedSwitch,
+  RequireLeadSwitch,
   VisibleSwitch,
 } from "@/components/admin/ResourceRowActions";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -39,6 +40,7 @@ export default async function AdminResourcesPage() {
                 <th>File / link</th>
                 <th>Visible</th>
                 <th>Featured</th>
+                <th>Email gate</th>
                 <th></th>
               </tr>
             </thead>
@@ -66,6 +68,9 @@ export default async function AdminResourcesPage() {
                   <td>
                     <FeaturedSwitch resource={r} />
                   </td>
+                  <td>
+                    <RequireLeadSwitch resource={r} />
+                  </td>
                   <td style={{ whiteSpace: "nowrap", display: "flex", gap: 14 }}>
                     <EditResourceLink resource={r} />
                     <DeleteResourceButton resource={r} />
@@ -78,7 +83,8 @@ export default async function AdminResourcesPage() {
       </div>
       <p className="admin-note">
         Visible = live on the public library. Featured = the large two-column card (only one at a
-        time — featuring a resource unfeatures the previous one).
+        time). Email gate = visitors give name &amp; email before downloading; off = instant
+        download.
       </p>
     </>
   );

@@ -12,9 +12,18 @@ interface Props {
   externalUrl: string | null;
   /** When false, the admin turned the lead form off — download directly. */
   requireLead: boolean;
+  /** Hidden on the reader page, where you're already viewing. */
+  showView?: boolean;
 }
 
-export function DownloadFlow({ resourceId, format, externalOnly, externalUrl, requireLead }: Props) {
+export function DownloadFlow({
+  resourceId,
+  format,
+  externalOnly,
+  externalUrl,
+  requireLead,
+  showView = true,
+}: Props) {
   const [step, setStep] = useState<"cta" | "form" | "ready">("cta");
   const [firstName, setFirstName] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
@@ -142,7 +151,7 @@ export function DownloadFlow({ resourceId, format, externalOnly, externalUrl, re
           <p className="download-ready-copy">
             {firstName ? <>Thanks, {firstName} — your copy is ready below.</> : <>Your copy is ready below.</>}
           </p>
-          {kind === "file" && (
+          {kind === "file" && showView && (
             <div className="view-row">
               <Link href={`/r/${resourceId}/view`} className="btn-green">
                 View {format} <span>→</span>

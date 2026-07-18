@@ -200,11 +200,19 @@ a {
   background: rgba(255, 255, 255, 0.45);
   color: var(--ink);
 }
+.admin-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 .reader-footer {
   display: flex;
-  align-items: center;
-  gap: 22px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
   margin-top: 32px;
   padding-top: 28px;

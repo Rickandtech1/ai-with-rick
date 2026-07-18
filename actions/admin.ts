@@ -139,6 +139,31 @@ export async function setResourceFeatured(id: string, featured: boolean): Promis
   return { ok: true };
 }
 
+export async function setResourceRequireLead(id: string, requireLead: boolean): Promise<ActionResult> {
+  await requireAdminAction();
+  const { error } = await supabaseAdmin()
+    .from("resources")
+    .update({ require_lead: requireLead })
+    .eq("id", id);
+  if (error) return { ok: false, error: error.message };
+  revalidatePublic(id);
+  revalidatePath("/admin");
+  return { ok: true };
+}
+
+const AUDIENCE_TABLES = ["leads", "newsletter_subscribers", "contact_messages"] as const;
+export type AudienceTable = (typeof AUDIENCE_TABLES)[number];
+
+/** Delete a single audience row (lead / subscriber / contact message). */
+export async function deleteAudienceRow(table: AudienceTable, id: string): Promise<ActionResult> {
+  await requireAdminAction();
+  if (!AUDIENCE_TABLES.includes(table)) return { ok: false, error: "Unknown table." };
+  const { error } = await supabaseAdmin().from(table).delete().eq("id", id);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/admin/audience");
+  return { ok: true };
+}
+
 export async function deleteResource(id: string): Promise<ActionResult> {
   await requireAdminAction();
   const db = supabaseAdmin();

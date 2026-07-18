@@ -151,7 +151,7 @@ export function ResourceForm({ resource }: { resource?: Resource }) {
           <input
             type="checkbox"
             name="require_lead"
-            defaultChecked={resource?.require_lead ?? true}
+            defaultChecked={resource?.require_lead ?? false}
           />
           Require name &amp; email before download
         </label>

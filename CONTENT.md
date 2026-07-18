@@ -45,7 +45,7 @@ That's it. Details below are for Claude.
      -F "published_date=YYYY-MM-DD" \
      -F "body_content=<content/sources/<slug>-body.md" \
      -F "visible=true" -F "featured=false" \
-     -F "require_lead=true" \          # false = instant download, no email form
+     -F "require_lead=false" \         # default false = instant download; true = email form first
      -F "file=@content/out/<slug>.pdf;type=application/pdf" \
      -F "md_file=@content/out/<slug>.md;type=text/markdown"
    ```

@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { useTransition } from "react";
-import { deleteResource, setResourceFeatured, setResourceVisible } from "@/actions/admin";
+import {
+  deleteResource,
+  setResourceFeatured,
+  setResourceRequireLead,
+  setResourceVisible,
+} from "@/actions/admin";
 import type { Resource } from "@/lib/types";
 
 export function VisibleSwitch({ resource }: { resource: Resource }) {
@@ -37,6 +42,30 @@ export function FeaturedSwitch({ resource }: { resource: Resource }) {
       onClick={() =>
         startTransition(async () => {
           await setResourceFeatured(resource.id, !resource.featured);
+        })
+      }
+    />
+  );
+}
+
+export function RequireLeadSwitch({ resource }: { resource: Resource }) {
+  const [pending, startTransition] = useTransition();
+  const on = resource.require_lead ?? true;
+  return (
+    <button
+      type="button"
+      className="switch"
+      data-on={on}
+      disabled={pending}
+      title={
+        on
+          ? "Email gate ON — visitors fill the form before downloading. Click for instant downloads."
+          : "Email gate OFF — instant downloads. Click to require name & email."
+      }
+      aria-label={`Toggle email gate for ${resource.title}`}
+      onClick={() =>
+        startTransition(async () => {
+          await setResourceRequireLead(resource.id, !on);
         })
       }
     />

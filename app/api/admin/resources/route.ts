@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
         file_path: String(form.get("file_path") ?? "").trim() || null,
         visible: parseBool(form.get("visible"), true),
         featured: parseBool(form.get("featured"), false),
-        require_lead: parseBool(form.get("require_lead"), true),
+        require_lead: parseBool(form.get("require_lead"), false),
       };
     } else {
       const body = await request.json();
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
         file_path: body.file_path ? String(body.file_path) : null,
         visible: parseBool(body.visible, true),
         featured: parseBool(body.featured, false),
-        require_lead: parseBool(body.require_lead, true),
+        require_lead: parseBool(body.require_lead, false),
       };
     }
   } catch {

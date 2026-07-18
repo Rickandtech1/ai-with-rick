@@ -1,3 +1,4 @@
+import { DeleteRowButton } from "@/components/admin/AudienceRowActions";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import type { ContactMessage, Lead, NewsletterSubscriber } from "@/lib/types";
 
@@ -27,7 +28,10 @@ export default async function AdminAudiencePage() {
       </div>
 
       <div className="admin-panel admin-table-scroll">
-        <h2 className="admin-h2">Recent leads ({leads?.length ?? 0})</h2>
+        <div className="admin-section-head">
+          <h2 className="admin-h2">Recent leads ({leads?.length ?? 0})</h2>
+          <a href="/admin/export/leads" className="admin-link">Export CSV (Excel) ↓</a>
+        </div>
         {!leads?.length ? (
           <p className="admin-note">No downloads yet.</p>
         ) : (
@@ -39,6 +43,7 @@ export default async function AdminAudiencePage() {
                 <th>Email</th>
                 <th>Resource</th>
                 <th>Newsletter</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -57,6 +62,9 @@ export default async function AdminAudiencePage() {
                       <span className="pill pill--hidden">No</span>
                     )}
                   </td>
+                  <td>
+                    <DeleteRowButton table="leads" id={l.id} label={`the lead ${l.email}`} />
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -65,7 +73,10 @@ export default async function AdminAudiencePage() {
       </div>
 
       <div className="admin-panel admin-table-scroll">
-        <h2 className="admin-h2">Newsletter subscribers ({subscribers?.length ?? 0})</h2>
+        <div className="admin-section-head">
+          <h2 className="admin-h2">Newsletter subscribers ({subscribers?.length ?? 0})</h2>
+          <a href="/admin/export/subscribers" className="admin-link">Export CSV (Excel) ↓</a>
+        </div>
         {!subscribers?.length ? (
           <p className="admin-note">No subscribers yet.</p>
         ) : (
@@ -75,6 +86,7 @@ export default async function AdminAudiencePage() {
                 <th>Since</th>
                 <th>Email</th>
                 <th>Status</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -89,6 +101,13 @@ export default async function AdminAudiencePage() {
                       <span className="pill pill--live">Active</span>
                     )}
                   </td>
+                  <td>
+                    <DeleteRowButton
+                      table="newsletter_subscribers"
+                      id={s.id}
+                      label={`the subscriber ${s.email}`}
+                    />
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -97,7 +116,10 @@ export default async function AdminAudiencePage() {
       </div>
 
       <div className="admin-panel admin-table-scroll">
-        <h2 className="admin-h2">Contact messages ({messages?.length ?? 0})</h2>
+        <div className="admin-section-head">
+          <h2 className="admin-h2">Contact messages ({messages?.length ?? 0})</h2>
+          <a href="/admin/export/messages" className="admin-link">Export CSV (Excel) ↓</a>
+        </div>
         {!messages?.length ? (
           <p className="admin-note">No messages yet.</p>
         ) : (
@@ -107,6 +129,7 @@ export default async function AdminAudiencePage() {
                 <th>When</th>
                 <th>From</th>
                 <th>Message</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -119,6 +142,13 @@ export default async function AdminAudiencePage() {
                     <span className="admin-note">{m.email}</span>
                   </td>
                   <td style={{ maxWidth: 420, lineHeight: 1.5 }}>{m.message}</td>
+                  <td>
+                    <DeleteRowButton
+                      table="contact_messages"
+                      id={m.id}
+                      label={`the message from ${m.name}`}
+                    />
+                  </td>
                 </tr>
               ))}
             </tbody>
