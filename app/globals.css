@@ -661,7 +661,11 @@ a {
 .resources-heading {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  /* Plain `baseline` would align the blurb to the eyebrow — the left
+     column's *first* baseline — leaving it floating above the title.
+     `last baseline` sits it on the "Resources" baseline instead. */
+  align-items: flex-end;
+  align-items: last baseline;
   margin-bottom: 44px;
   gap: 32px;
   flex-wrap: wrap;
@@ -678,9 +682,15 @@ a {
 }
 .resources-blurb {
   font-size: 15px;
+  line-height: 1.55;
   color: var(--muted);
-  max-width: 340px;
+  max-width: 360px;
   margin: 0;
+  text-wrap: pretty;
+}
+/* Break between the two sentences rather than mid-clause. */
+.resources-blurb span {
+  display: block;
 }
 .resource-grid {
   display: grid;

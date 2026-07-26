@@ -30,7 +30,8 @@ export default async function LibraryPage() {
             <h2 className="resources-title">Resources</h2>
           </div>
           <p className="resources-blurb">
-            Everything I&apos;ve put together so far. Pick one to read and download.
+            <span>Everything I&apos;ve put together so far.</span>{" "}
+            <span>Pick one to read and download.</span>
           </p>
         </div>
         {resources.length === 0 ? (
