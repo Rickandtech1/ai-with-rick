@@ -1,3 +1,4 @@
+import { AuroraBackground } from "@/components/AuroraBackground";
 import { ContactSection } from "@/components/ContactSection";
 import { DepthMotion } from "@/components/DepthMotion";
 import { Hero } from "@/components/Hero";
@@ -17,6 +18,7 @@ export default async function LibraryPage() {
 
   return (
     <div>
+      <AuroraBackground />
       <SiteHeader variant="library" />
       <DepthMotion />
       <Hero video={heroVideo} />

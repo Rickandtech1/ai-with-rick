@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AuroraBackground } from "@/components/AuroraBackground";
 import { ContactSection } from "@/components/ContactSection";
 import { CopyCodeButtons } from "@/components/CopyCodeButtons";
 import { DownloadFlow } from "@/components/DownloadFlow";
@@ -53,6 +54,7 @@ export default async function ResourceReaderPage({
 
   return (
     <div>
+      <AuroraBackground />
       <SiteHeader variant="detail" />
 
       <section className="detail-section">

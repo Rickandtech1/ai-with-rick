@@ -1732,3 +1732,16 @@ a {
     display: none;
   }
 }
+
+/* ---------- flowing background (Direction B) ----------
+   Fixed behind all content. `body` keeps its static gradient underneath,
+   so if AuroraBackground bails the page looks exactly as it did before. */
+.aurora-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
