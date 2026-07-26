@@ -1,4 +1,5 @@
 import { ContactSection } from "@/components/ContactSection";
+import { DepthMotion } from "@/components/DepthMotion";
 import { Hero } from "@/components/Hero";
 import { NewsletterPanel } from "@/components/NewsletterPanel";
 import { ResourceGrid } from "@/components/ResourceGrid";
@@ -17,6 +18,7 @@ export default async function LibraryPage() {
   return (
     <div>
       <SiteHeader variant="library" />
+      <DepthMotion />
       <Hero video={heroVideo} />
 
       <section className="resources-section" id="resources">

@@ -1439,3 +1439,296 @@ a {
     padding: 28px 24px;
   }
 }
+
+/* ============================================================
+   Depth & motion (Direction A)
+
+   Three ideas, in cascade order:
+   1. The hero gets a background layer of drifting light + glass
+      shards that parallax against the pointer.
+   2. The video card and resource cards tilt toward the pointer.
+      JS only writes --tilt-* / --glare-* custom properties; the
+      transforms themselves live here so the resting pose is
+      always correct even if the script never runs.
+   3. Entrance animations are gated behind `scripting: enabled`
+      so that a browser without JS renders everything visible
+      rather than stuck at opacity 0.
+   ============================================================ */
+:root {
+  --glow: #f0a882;
+  --sand: #e8cdb4;
+}
+
+/* ---------- hero: layered background ---------- */
+.hero {
+  position: relative;
+}
+.hero > * {
+  position: relative;
+  z-index: 1;
+}
+.hero > .hero-depth {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(64px);
+  opacity: 0.5;
+  will-change: transform;
+  animation: orb-drift 22s ease-in-out infinite;
+}
+.hero-orb--1 {
+  width: 380px;
+  height: 380px;
+  background: var(--glow);
+  top: -90px;
+  left: 3%;
+}
+.hero-orb--2 {
+  width: 300px;
+  height: 300px;
+  background: var(--accent);
+  bottom: -70px;
+  right: 16%;
+  opacity: 0.3;
+  animation-delay: -8s;
+}
+@keyframes orb-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(26px, -30px, 0) scale(1.12);
+  }
+}
+.hero-shard {
+  position: absolute;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 20px 40px -18px rgba(90, 55, 35, 0.36);
+  animation: shard-drift 16s ease-in-out infinite;
+}
+.hero-shard--1 {
+  width: 118px;
+  height: 148px;
+  top: 8%;
+  left: 1%;
+  --shard-rotate: -9deg;
+}
+.hero-shard--2 {
+  width: 76px;
+  height: 76px;
+  bottom: 14%;
+  left: 28%;
+  --shard-rotate: 12deg;
+  animation-delay: -6s;
+}
+.hero-shard--3 {
+  width: 140px;
+  height: 92px;
+  top: 12%;
+  right: 3%;
+  --shard-rotate: 7deg;
+  animation-delay: -11s;
+}
+@keyframes shard-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(var(--shard-rotate, 0deg));
+  }
+  50% {
+    transform: translate3d(0, -20px, 0) rotate(calc(var(--shard-rotate, 0deg) + 4deg));
+  }
+}
+/* The parallax wrapper is what JS moves, so the drift animation
+   above and the pointer offset never fight over `transform`. */
+.hero-layer {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+/* ---------- video card: pointer tilt + tracking glare ---------- */
+.video-card {
+  position: relative;
+  transform: rotate3d(0.4, -0.6, 0.08, 18deg) rotateY(var(--tilt-y, 0deg))
+    rotateX(var(--tilt-x, 0deg));
+  transform-style: preserve-3d;
+}
+.video-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  pointer-events: none;
+  background: radial-gradient(
+    240px 240px at var(--glare-x, 50%) var(--glare-y, 0%),
+    rgba(255, 255, 255, 0.45),
+    transparent 62%
+  );
+  /* Overlay keeps the highlight on the glass instead of over the text. */
+  mix-blend-mode: overlay;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.hero:hover .video-card::after {
+  opacity: 1;
+}
+
+/* ---------- resource cards: tilt, lift & shine ---------- */
+.resource-card {
+  overflow: hidden;
+  transform: perspective(900px) rotateY(var(--tilt-y, 0deg)) rotateX(var(--tilt-x, 0deg))
+    translateY(var(--lift, 0px)) scale(var(--card-scale, 1));
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+}
+.resource-card > * {
+  position: relative;
+  z-index: 1;
+}
+.resource-card:hover {
+  --lift: -6px;
+  --card-scale: 1.015;
+  box-shadow: 0 28px 50px -20px rgba(90, 55, 35, 0.42);
+}
+/* A single sweep of light across the card on hover. */
+.resource-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 62%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.resource-card:hover::after {
+  transform: translateX(120%);
+}
+
+/* ---------- entrance animations ---------- */
+@media (scripting: enabled) {
+  .hero-rise > span {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    /* keep descenders out of the reveal mask */
+    padding-bottom: 0.14em;
+    margin-bottom: -0.14em;
+  }
+  .hero-rise > span > i {
+    display: inline-block;
+    font-style: normal;
+    animation: rise-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .hero-rise > span:nth-child(2) > i {
+    animation-delay: 0.11s;
+  }
+  .hero-pill,
+  .hero-copy,
+  .hero .btn-dark,
+  .hero-visual {
+    animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .hero-copy {
+    animation-delay: 0.24s;
+  }
+  .hero .btn-dark {
+    animation-delay: 0.32s;
+  }
+  .hero-visual {
+    animation-delay: 0.4s;
+  }
+  .resource-card {
+    animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .resource-card:nth-child(2) {
+    animation-delay: 0.06s;
+  }
+  .resource-card:nth-child(3) {
+    animation-delay: 0.12s;
+  }
+  .resource-card:nth-child(4) {
+    animation-delay: 0.18s;
+  }
+  .resource-card:nth-child(n + 5) {
+    animation-delay: 0.24s;
+  }
+}
+@keyframes rise-in {
+  from {
+    transform: translateY(105%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes fade-up {
+  from {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ---------- smaller screens ---------- */
+@media (max-width: 768px) {
+  .hero-shard {
+    display: none;
+  }
+  .hero-orb--1 {
+    width: 260px;
+    height: 260px;
+  }
+  .hero-orb--2 {
+    width: 220px;
+    height: 220px;
+  }
+  /* No pointer to tilt toward — press-down instead. */
+  .resource-card:active {
+    --card-scale: 0.985;
+    --lift: 0px;
+  }
+}
+
+/* ---------- motion preferences win over everything above ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .hero-orb,
+  .hero-shard {
+    animation: none;
+  }
+  .hero-rise > span > i,
+  .hero-pill,
+  .hero-copy,
+  .hero .btn-dark,
+  .hero-visual,
+  .resource-card {
+    animation: none;
+  }
+  .resource-card,
+  .video-card {
+    transition: none;
+  }
+  .resource-card::after {
+    display: none;
+  }
+}

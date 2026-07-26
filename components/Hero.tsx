@@ -6,9 +6,32 @@ export function Hero({ video }: { video: HeroVideo }) {
 
   return (
     <section className="hero">
-      <div>
+      {/* Decorative depth layer. `data-depth` sets how far each layer travels
+          against the pointer — wired up in components/DepthMotion.tsx. */}
+      <div className="hero-depth" aria-hidden="true">
+        <div className="hero-layer" data-depth="8">
+          <div className="hero-orb hero-orb--1" />
+          <div className="hero-orb hero-orb--2" />
+        </div>
+        <div className="hero-layer" data-depth="14">
+          <div className="hero-shard hero-shard--1" />
+          <div className="hero-shard hero-shard--3" />
+        </div>
+        <div className="hero-layer" data-depth="26">
+          <div className="hero-shard hero-shard--2" />
+        </div>
+      </div>
+
+      <div data-depth="4">
         <div className="hero-pill">A growing library of notes</div>
-        <h1 className="hero-title">Practical AI knowledge, minus the hype.</h1>
+        <h1 className="hero-title hero-rise">
+          <span>
+            <i>Practical AI knowledge,</i>
+          </span>{" "}
+          <span>
+            <i>minus the hype.</i>
+          </span>
+        </h1>
         <p className="hero-copy">
           I&apos;m Rick — I write and record what I&apos;m actually learning about AI and modern
           tooling, then package the useful parts into guides you can keep.
